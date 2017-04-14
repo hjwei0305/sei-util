@@ -1,18 +1,90 @@
-allprojects {
-    group GROUP
-    version VERSION
+group GROUP
+version VERSION
 
-    apply plugin: 'java'
-    apply plugin: 'idea'
-    apply plugin: 'maven'
+apply plugin: 'maven'
+apply plugin: 'java'
 
-    // JVM 版本号要求
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+// JVM 版本号要求
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
-    repositories {
-        mavenLocal()
+// java编译的时候缺省状态下会因为中文字符而失败
+[compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
-        maven { url 'http://rddgit.changhong.com:8081/nexus/content/groups/ECMP_Group/' }
+repositories {
+    mavenLocal()
+
+    maven { url 'http://rddgit.changhong.com:8081/nexus/content/groups/ECMP_Group' }
+}
+
+//自定义属性
+ext {
+
+}
+
+dependencies {
+    compile(
+            "org.apache.commons:commons-lang3:3.+",
+
+            //json
+            "com.fasterxml.jackson.core:jackson-core:$jackson_version",
+            "com.fasterxml.jackson.core:jackson-annotations:$jackson_version",
+            "com.fasterxml.jackson.core:jackson-databind:$jackson_version",
+
+            "org.apache.logging.log4j:log4j-api:$log4j_version",
+            "org.apache.logging.log4j:log4j-core:$log4j_version",
+            "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version"
+    )
+
+    // 测试依赖
+    testCompile(
+            "org.springframework:spring-test:$spring_version",
+            "junit:junit:4.12"
+    )
+}
+
+jar {
+    manifest {
+//        attributes("Created-By": "ecmp")
+        attributes("Implementation-Title": "ecmp-core")
+//        attributes("Implementation-Version": "1.0-SNAPSHOT")
+        attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
     }
+}
+
+/////////////////////////////////////Maven////////////////////////////////////////
+// http://www.cnblogs.com/yjmyzz/p/auto-upload-artifact-to-nexus.html
+
+//打包源代码
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+//如果希望gradle install，安装到.m2本地仓库，参考下面的内容
+install {
+    repositories.mavenInstaller {
+        pom.version = "$project.version"
+        pom.artifactId = "$project.name"
+        pom.groupId = "$project.group"
+    }
+}
+
+//上传到nexus
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: MAVEN_REPO_URL) {
+                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+            }
+            pom.version = "$project.version"
+            pom.artifactId = "$project.name"
+            pom.groupId = "$project.group"
+        }
+    }
+    return 'Success'
 }
