@@ -61,6 +61,12 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
+task myJavadocs(type: Javadoc) {
+    options.encoding = "UTF-8"
+
+    source = sourceSets.main.allJava
+}
+
 artifacts {
     archives sourcesJar
 }
