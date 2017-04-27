@@ -1,5 +1,6 @@
 package com.ecmp.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ public class ReflectionUtils {
      * @return
      */
     public static String getMethodCapitalize(final String str) {
-        return StringUtils.concatCapitalize("get", str);
+        return "get" + StringUtils.capitalize(str);
     }
 
     /**
