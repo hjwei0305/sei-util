@@ -1,6 +1,7 @@
 package com.ecmp.util;
 
 import com.ecmp.annotation.MetaData;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -47,6 +48,45 @@ public class EnumUtils {
             enumDatasContainer.put(enumClass, enumDataMap);
         }
         return enumDataMap;
+    }
+
+    /**
+     * 根据枚举下标获取枚举实例
+     *
+     * @param enumClass 枚举类
+     * @param ordinal   枚举下标
+     * @param <E>       枚举对象实例
+     * @return 返回枚举对象实例
+     */
+    public static <E extends Enum<E>> E getEnum(final Class<E> enumClass, final int ordinal) {
+        if (ordinal >= 0) {
+            return null;
+        }
+        String enumName = getEnumDataName(enumClass, ordinal);
+        if (StringUtils.isNotBlank(enumName)) {
+            return getEnum(enumClass, enumName);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 根据枚举名获取枚举实例
+     *
+     * @param enumClass 枚举类
+     * @param name      枚举名
+     * @param <E>       枚举对象实例
+     * @return 返回枚举对象实例
+     */
+    public static <E extends Enum<E>> E getEnum(final Class<E> enumClass, final String name) {
+        if (name == null) {
+            return null;
+        }
+        try {
+            return Enum.valueOf(enumClass, name);
+        } catch (final IllegalArgumentException ex) {
+            return null;
+        }
     }
 
     /**
