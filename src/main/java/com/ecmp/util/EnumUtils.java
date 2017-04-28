@@ -59,7 +59,7 @@ public class EnumUtils {
      * @return 返回枚举对象实例
      */
     public static <E extends Enum<E>> E getEnum(final Class<E> enumClass, final int ordinal) {
-        if (ordinal >= 0) {
+        if (ordinal < 0) {
             return null;
         }
         String enumName = getEnumDataName(enumClass, ordinal);
@@ -90,15 +90,36 @@ public class EnumUtils {
     }
 
     /**
-     * 根据指定的枚举下标获取枚举名称
-     * 若有@MetaData注解将获取@MetaData#value
+     * 根据指定的枚举下标获取枚举描述或名称
+     * 若有@MetaData注解将获取@MetaData#value的枚举描述，没有则是枚举名
      *
      * @param enumClass 枚举类
      * @param key       枚举下标
      * @return 返回枚举下标对应的描述或名称
      */
-    public static String getEnumDataName(Class<? extends Enum> enumClass, int key) {
+    public static String getEnumDataText(Class<? extends Enum> enumClass, int key) {
         Map<Integer, String> enumDataMap = getEnumDataMap(enumClass);
         return enumDataMap != null ? enumDataMap.get(key) : null;
+    }
+
+    /**
+     * 根据指定的枚举下标获取枚举名称
+     *
+     * @param enumClass 枚举类
+     * @param key       枚举下标
+     * @return 返回枚举下标对应的名称
+     */
+    public static String getEnumDataName(Class<? extends Enum> enumClass, int key) {
+        String name = null;
+        if (key >= 0) {
+            Field[] fields = enumClass.getFields();
+            for (Field field : fields) {
+                name = field.getName();
+                if (key == Enum.valueOf(enumClass, name).ordinal()) {
+                    break;
+                }
+            }
+        }
+        return name;
     }
 }
