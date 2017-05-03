@@ -1,11 +1,11 @@
 package com.ecmp.util;
 
-import com.ecmp.annotation.MetaData;
-import org.apache.commons.lang3.StringUtils;
+import com.ecmp.annotation.Remark;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,52 +22,62 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public class EnumUtils {
-    private static Map<Class<?>, Map<Integer, String>> enumDatasContainer = new HashMap<Class<?>, Map<Integer, String>>();
+    private static Map<Class<?>, List<EnumEntity>> enumDatasContainer = new HashMap<Class<?>, List<EnumEntity>>();
 
     /**
      * 基于Enum类返回对应的key-value Map构建对象
      */
-    public static Map<Integer, String> getEnumDataMap(Class<? extends Enum> enumClass) {
-        Map<Integer, String> enumDataMap = null;
+    public static List<EnumEntity> getEnumDataList(Class<? extends Enum> enumClass) {
+        List<EnumEntity> enumEntities = null;
         if (enumClass != null) {
-            enumDataMap = enumDatasContainer.get(enumClass);
-            if (enumDataMap != null) {
-                return enumDataMap;
+            enumEntities = enumDatasContainer.get(enumClass);
+            if (enumEntities != null) {
+                return enumEntities;
             }
-            enumDataMap = new LinkedHashMap<Integer, String>();
+            EnumEntity enumEntity;
+            enumEntities = new ArrayList<EnumEntity>();
             Field[] fields = enumClass.getFields();
             for (Field field : fields) {
-                String name = field.getName();
-                String label = name;
-                MetaData entityComment = field.getAnnotation(MetaData.class);
+                String remark;
+                Remark entityComment = field.getAnnotation(Remark.class);
                 if (entityComment != null) {
-                    label = entityComment.value();
+                    remark = entityComment.value();
+                } else {
+                    remark = field.getName();
                 }
-                enumDataMap.put(Enum.valueOf(enumClass, name).ordinal(), label);
+
+                String name = field.getName();
+                Enum anEnum = Enum.valueOf(enumClass, name);
+                enumEntities.add(new EnumEntity(anEnum.ordinal(), name, remark, anEnum));
             }
-            enumDatasContainer.put(enumClass, enumDataMap);
+            enumDatasContainer.put(enumClass, enumEntities);
         }
-        return enumDataMap;
+        return enumEntities;
     }
 
     /**
      * 根据枚举下标获取枚举实例
      *
+     * @param <E>       枚举对象实例
      * @param enumClass 枚举类
      * @param ordinal   枚举下标
-     * @param <E>       枚举对象实例
      * @return 返回枚举对象实例
      */
     public static <E extends Enum<E>> E getEnum(final Class<E> enumClass, final int ordinal) {
         if (ordinal < 0) {
             return null;
         }
-        String enumName = getEnumDataName(enumClass, ordinal);
-        if (StringUtils.isNotBlank(enumName)) {
-            return getEnum(enumClass, enumName);
-        } else {
-            return null;
+        E anEnum = null;
+        List<EnumEntity> enumDataList = getEnumDataList(enumClass);
+        if (enumDataList != null && !enumDataList.isEmpty()) {
+            for (EnumEntity entity : enumDataList) {
+                if (ordinal == entity.getValue()) {
+                    anEnum = (E) entity.getAnEnum();
+                    break;
+                }
+            }
         }
+        return anEnum;
     }
 
     /**
@@ -90,36 +100,79 @@ public class EnumUtils {
     }
 
     /**
-     * 根据指定的枚举下标获取枚举描述或名称
-     * 若有@MetaData注解将获取@MetaData#value的枚举描述，没有则是枚举名
-     *
-     * @param enumClass 枚举类
-     * @param key       枚举下标
-     * @return 返回枚举下标对应的描述或名称
-     */
-    public static String getEnumDataText(Class<? extends Enum> enumClass, int key) {
-        Map<Integer, String> enumDataMap = getEnumDataMap(enumClass);
-        return enumDataMap != null ? enumDataMap.get(key) : null;
-    }
-
-    /**
      * 根据指定的枚举下标获取枚举名称
      *
      * @param enumClass 枚举类
-     * @param key       枚举下标
+     * @param ordinal   枚举下标
      * @return 返回枚举下标对应的名称
      */
-    public static String getEnumDataName(Class<? extends Enum> enumClass, int key) {
+    public static String getEnumItemName(Class<? extends Enum> enumClass, int ordinal) {
         String name = null;
-        if (key >= 0) {
-            Field[] fields = enumClass.getFields();
-            for (Field field : fields) {
-                name = field.getName();
-                if (key == Enum.valueOf(enumClass, name).ordinal()) {
-                    break;
+        if (ordinal >= 0) {
+            List<EnumEntity> enumDataList = getEnumDataList(enumClass);
+            if (enumDataList != null && !enumDataList.isEmpty()) {
+                for (EnumEntity entity : enumDataList) {
+                    if (ordinal == entity.getValue()) {
+                        name = entity.getName();
+                        break;
+                    }
                 }
             }
         }
         return name;
+    }
+
+    /**
+     * 根据指定的枚举下标获取枚举描述或名称
+     * 若有@MetaData注解将获取@MetaData#value的枚举描述，没有则是枚举名
+     *
+     * @param enumClass 枚举类
+     * @param ordinal   枚举下标
+     * @return 返回枚举下标对应的描述或名称
+     */
+    public static String getEnumItemRemark(Class<? extends Enum> enumClass, int ordinal) {
+        String remark = null;
+        if (ordinal >= 0) {
+            List<EnumEntity> enumDataList = getEnumDataList(enumClass);
+            if (enumDataList != null && !enumDataList.isEmpty()) {
+                for (EnumEntity entity : enumDataList) {
+                    if (ordinal == entity.getValue()) {
+                        remark = entity.getRemark();
+                        break;
+                    }
+                }
+            }
+        }
+        return remark;
+    }
+
+    static public class EnumEntity {
+        private int value;
+        private String name;
+        private String remark;
+        private Enum anEnum;
+
+        public EnumEntity(int value, String name, String remark, Enum anEnum) {
+            this.value = value;
+            this.name = name;
+            this.remark = remark;
+            this.anEnum = anEnum;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public Enum getAnEnum() {
+            return anEnum;
+        }
     }
 }

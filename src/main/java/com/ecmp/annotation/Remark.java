@@ -6,7 +6,7 @@ import java.lang.annotation.*;
  * *************************************************************************************************<br>
  * <br>
  * 实现功能：<br>
- *     用于注解类或属性的元数据，这些元数据用于运行时动态内容生成
+ *     用于注解类或属性的备注数据，这些元数据用于运行时动态内容生成
  * <br>
  * ------------------------------------------------------------------------------------------------<br>
  * 版本          变更时间             变更人                     变更原因<br>
@@ -18,7 +18,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PACKAGE })
-public @interface MetaData {
+public @interface Remark {
     /**
      * 简要注解说明
      */
