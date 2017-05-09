@@ -146,6 +146,18 @@ public class EnumUtils {
         return remark;
     }
 
+    /**
+     * 根据指定的枚举下标获取枚举描述或名称
+     * 若有@MetaData注解将获取@MetaData#value的枚举描述，没有则是枚举名
+     *
+     * @param enumClass 枚举类
+     * @param anEnum    枚举实例
+     * @return 返回枚举下标对应的描述或名称
+     */
+    public static String getEnumItemRemark(Class<? extends Enum> enumClass, Enum anEnum) {
+        return getEnumItemRemark(enumClass, anEnum.ordinal());
+    }
+
     static public class EnumEntity {
         private int value;
         private String name;

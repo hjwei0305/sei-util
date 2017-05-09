@@ -57,13 +57,9 @@ public class IdGenerator {
         return timeBasedGenerator.generate().toString().toUpperCase().replaceAll("-", "");
     }
 
-    @Deprecated
-    public static String activitiId() {
-        return "sid" + uuid().replaceAll("-", "");
-    }
-
     /**
      * 使用SecureRandom随机生成Long.
+     * 不保证唯一性
      */
     public static long randomLong() {
         return Math.abs(random.nextLong());
