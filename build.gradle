@@ -24,7 +24,8 @@ ext {
 
 dependencies {
     compile(
-            "org.apache.commons:commons-lang3:3.+",
+            "org.apache.commons:commons-lang3:$commons_lang3_version",
+            "commons-codec:commons-codec:$commons_codec_version",
 
             //json
             "com.fasterxml.jackson.core:jackson-core:$jackson_version",
@@ -44,7 +45,7 @@ dependencies {
     // 测试依赖
     testCompile(
             "org.springframework:spring-test:$spring_version",
-            "junit:junit:4.12"
+            "junit:junit:$junit_version"
     )
 }
 
