@@ -20,7 +20,7 @@ import java.lang.annotation.*;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ElementType.PACKAGE,ElementType.TYPE})
 public @interface AppModule {
     /**
      * 系统应用模块代码
