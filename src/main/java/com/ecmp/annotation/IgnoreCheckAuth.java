@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  * <br>
  * 实现功能：
  * <br>
- * 该注解用于API接口类上，以此获取对应应用模块的接口基地址
+ * 平台默认检查权限，该注解用于一些不许进行权限检查的方法或类上
  * ------------------------------------------------------------------------------------------------
  * <br>
  * 版本          变更时间             变更人                     变更原因
@@ -20,10 +20,8 @@ import java.lang.annotation.*;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PACKAGE})
-public @interface AppModule {
-    /**
-     * 系统应用模块代码
-     */
-    String value();
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface IgnoreCheckAuth {
+
+//    boolean value() default true;
 }
