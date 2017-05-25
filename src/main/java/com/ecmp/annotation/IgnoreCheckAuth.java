@@ -22,6 +22,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface IgnoreCheckAuth {
-
-//    boolean value() default true;
+    boolean value() default true;
 }
