@@ -2,10 +2,17 @@ package com.ecmp.util;
 
 import org.apache.commons.codec.binary.Base64;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * *************************************************************************************************
@@ -90,5 +97,78 @@ public class SerializeUtils {
         } catch (Exception e) {
             throw new RuntimeException("unserialize object error", e);
         }
+    }
+
+    /**
+     * 将一个 JavaBean 对象转化为一个  Map
+     *
+     * @param bean 要转化的JavaBean 对象
+     * @return 转化出来的  Map 对象
+     * @throws java.beans.IntrospectionException    如果分析类属性失败
+     * @throws IllegalAccessException    如果实例化 JavaBean 失败
+     * @throws java.lang.reflect.InvocationTargetException 如果调用属性的 setter 方法失败
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static Map<String, Object> convertBean(Object bean) throws IntrospectionException, IllegalAccessException, InvocationTargetException {
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
+
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+        for (PropertyDescriptor descriptor : propertyDescriptors) {
+            String propertyName = descriptor.getName();
+            if (!propertyName.equals("class")) {
+                Method readMethod = descriptor.getReadMethod();
+                Object result = readMethod.invoke(bean, new Object[0]);
+                if (result != null) {
+                    if (result instanceof Collection) {
+                        List list = new ArrayList();
+                        Collection collection = (Collection) result;
+                        for (Object obj : collection) {
+                            list.add(convertBean(obj));
+                        }
+                        returnMap.put(propertyName, list);
+                    } else {
+                        returnMap.put(propertyName, result);
+                    }
+                } else {
+                    returnMap.put(propertyName, "");
+                }
+            }
+        }
+        return returnMap;
+    }
+
+    /**
+     * 将一个 Map 对象转化为一个 JavaBean
+     *
+     * @param type 要转化的类型
+     * @param map  包含属性值的 map
+     * @return 转化出来的 JavaBean 对象
+     * @throws java.beans.IntrospectionException    如果分析类属性失败
+     * @throws IllegalAccessException    如果实例化 JavaBean 失败
+     * @throws InstantiationException    如果实例化 JavaBean 失败
+     * @throws java.lang.reflect.InvocationTargetException 如果调用属性的 setter 方法失败
+     */
+    @SuppressWarnings("rawtypes")
+    public static <T> T convertMap(Class<T> type, Map<String, Object> map) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException {
+        BeanInfo beanInfo = Introspector.getBeanInfo(type); // 获取类属性
+        T object = type.newInstance(); // 创建 JavaBean 对象
+
+        // 给 JavaBean 对象的属性赋值
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+        for (PropertyDescriptor descriptor : propertyDescriptors) {
+            String propertyName = descriptor.getName();
+            if (map.containsKey(propertyName)) {
+                Object[] args = new Object[1];
+                args[0] = map.get(propertyName);
+                // try 起来，这样当一个属性赋值失败的时候就不会影响其他属性赋值。
+                try {
+                    descriptor.getWriteMethod().invoke(object, args);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return object;
     }
 }
