@@ -5,12 +5,19 @@ import java.math.BigDecimal;
 /**
  * <strong>实现功能:</strong>.
  * <p>算术工具类</p>
- * 实现加、减、乘、除
+ * 由于Java的简单类型不能够精确的对浮点数进行运算，这个工具类提供精确的浮点数运算，包括加减乘除和四舍五入
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.1 2017/9/1 10:15
  */
 public class ArithUtils {
+    private static final int DEF_DIV_SCALE = 10;
+
+    /**
+     * 这个类不能实例化
+     */
+    private ArithUtils() {
+    }
 
     /**
      * 提供精确加法计算的add方法
@@ -52,22 +59,47 @@ public class ArithUtils {
     }
 
     /**
+     * 提供（相对）精确的除法运算，当发生除不尽的情况时，精确到 小数点以后10位，以后的数字四舍五入。
+     *
+     * @param v1 被除数
+     * @param v2 除数
+     * @return 两个参数的商
+     */
+    public static double div(double v1, double v2) {
+        return div(v1, v2, DEF_DIV_SCALE);
+    }
+
+    /**
      * 提供精确的除法运算方法div
      *
      * @param value1 被除数
      * @param value2 除数
      * @param scale  精确范围
      * @return 两个参数的商
-     * @throws IllegalAccessException 参数错误
      */
-    public static double div(double value1, double value2, int scale) throws IllegalAccessException {
+    public static double div(double value1, double value2, int scale) {
         //如果精确范围小于0，抛出异常信息
         if (scale < 0) {
-            throw new IllegalAccessException("精确度不能小于0");
+            throw new IllegalArgumentException("The scale must be a positive integer or zero");
         }
         BigDecimal b1 = new BigDecimal(value1);
         BigDecimal b2 = new BigDecimal(value2);
         return b1.divide(b2, scale).doubleValue();
     }
 
+    /**
+     * 提供精确的小数位四舍五入处理。
+     *
+     * @param v     需要四舍五入的数字
+     * @param scale 小数点后保留几位
+     * @return 四舍五入后的结果
+     */
+    public static double round(double v, int scale) {
+        if (scale < 0) {
+            throw new IllegalArgumentException("The scale must be a positive integer or zero");
+        }
+        BigDecimal b = new BigDecimal(Double.toString(v));
+        BigDecimal one = new BigDecimal("1");
+        return b.divide(one, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
 }
