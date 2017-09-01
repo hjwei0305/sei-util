@@ -15,25 +15,19 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * *************************************************************************************************
- * <br>
- * 实现功能：
- * <br>
- * 序列化工具类
- * ------------------------------------------------------------------------------------------------
- * <br>
- * 版本          变更时间             变更人                     变更原因
- * <br>
- * ------------------------------------------------------------------------------------------------
- * <br>
- * 1.0.00      2017/5/11 15:12      马超(Vision.Mac)                新建
- * <br>
- * *************************************************************************************************
+ * <strong>实现功能:</strong>.
+ * <p>序列化工具类</p>
+ *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017/5/11 15:12
  */
 @SuppressWarnings("unchecked")
 public class SerializeUtils {
     /**
      * 对象序列化成字符串
+     *
+     * @param object 对象
+     * @return 返回字符串
      */
     public static String serialize4Str(Object object) {
         try {
@@ -48,10 +42,14 @@ public class SerializeUtils {
 
     /**
      * 字符串反序列化为对象
+     *
+     * @param <T>  泛型
+     * @param sStr 字符串
+     * @return 返回对象
      */
-    public static <T> T unserialize4Str(String sessionStr) {
+    public static <T> T unserialize4Str(String sStr) {
         try {
-            ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decodeBase64(sessionStr));
+            ByteArrayInputStream bis = new ByteArrayInputStream(Base64.decodeBase64(sStr));
             ObjectInputStream ois = new ObjectInputStream(bis);
             return (T) ois.readObject();
         } catch (Exception e) {
@@ -61,6 +59,9 @@ public class SerializeUtils {
 
     /**
      * 对象序列化为二进制
+     *
+     * @param object 对象
+     * @return 返回二进制
      */
     public static byte[] serialize(Object object) {
         if (object == null) {
@@ -82,7 +83,8 @@ public class SerializeUtils {
     }
 
     /**
-     * 二进制反序列化为对象
+     * @param bytes 二进制数据
+     * @return 二进制反序列化为对象
      */
     public static Object unserialize(byte[] bytes) {
         if (bytes == null) {
@@ -104,8 +106,8 @@ public class SerializeUtils {
      *
      * @param bean 要转化的JavaBean 对象
      * @return 转化出来的  Map 对象
-     * @throws java.beans.IntrospectionException    如果分析类属性失败
-     * @throws IllegalAccessException    如果实例化 JavaBean 失败
+     * @throws java.beans.IntrospectionException           如果分析类属性失败
+     * @throws IllegalAccessException                      如果实例化 JavaBean 失败
      * @throws java.lang.reflect.InvocationTargetException 如果调用属性的 setter 方法失败
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -143,10 +145,11 @@ public class SerializeUtils {
      *
      * @param type 要转化的类型
      * @param map  包含属性值的 map
+     * @param <T>  泛型
      * @return 转化出来的 JavaBean 对象
-     * @throws java.beans.IntrospectionException    如果分析类属性失败
-     * @throws IllegalAccessException    如果实例化 JavaBean 失败
-     * @throws InstantiationException    如果实例化 JavaBean 失败
+     * @throws java.beans.IntrospectionException           如果分析类属性失败
+     * @throws IllegalAccessException                      如果实例化 JavaBean 失败
+     * @throws InstantiationException                      如果实例化 JavaBean 失败
      * @throws java.lang.reflect.InvocationTargetException 如果调用属性的 setter 方法失败
      */
     @SuppressWarnings("rawtypes")

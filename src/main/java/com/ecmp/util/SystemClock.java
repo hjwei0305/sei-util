@@ -20,6 +20,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * 1000万：480,12,40.0%<br>
  * 100万：50,10,5.0%<br>
  * </p>
+ *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017/2/8 10:20
  */
 public class SystemClock {
 

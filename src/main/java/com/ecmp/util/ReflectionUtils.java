@@ -10,17 +10,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
- * *************************************************************************************************
- * <p>
- * 实现功能：
- * 反射工具类
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/03/06 21:33      马超(Vision)                新建
- * <p>
- * *************************************************************************************************
+ * <strong>实现功能:</strong>.
+ * <p>反射工具类</p>
+ *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017/03/06 21:33
  */
 public class ReflectionUtils {
 
@@ -32,7 +26,7 @@ public class ReflectionUtils {
      * </p>
      *
      * @param str 属性字符串内容
-     * @return
+     * @return 返回get方法名
      */
     public static String getMethodCapitalize(final String str) {
         return "get" + StringUtils.capitalize(str);
@@ -41,7 +35,7 @@ public class ReflectionUtils {
     /**
      * 获取 public get方法的值
      *
-     * @param cls
+     * @param cls class
      * @param entity 实体
      * @param str    属性字符串内容
      * @return Object
@@ -79,8 +73,9 @@ public class ReflectionUtils {
      * 通过反射, 获得Class定义中声明的泛型参数的类型, 注意泛型必须定义在父类处
      * 如无法找到, 返回Object.class.
      * eg.
-     * public UserDao extends HibernateDao<User>
+     * public UserDao extends HibernateDao&lt;User&gt;
      *
+     * @param <T>   泛型
      * @param clazz The class to introspect
      * @return the first generic declaration, or Object.class if cannot be determined
      */
@@ -92,8 +87,7 @@ public class ReflectionUtils {
     /**
      * 通过反射, 获得Class定义中声明的父类的泛型参数的类型.
      * 如无法找到, 返回Object.class.
-     * <p/>
-     * 如public UserDao extends HibernateDao<User,Long>
+     * 如public UserDao extends HibernateDao&lt;User,Long&gt;
      *
      * @param clazz clazz The class to introspect
      * @param index the Index of the generic ddeclaration,start from 0.
@@ -127,6 +121,9 @@ public class ReflectionUtils {
 
     /**
      * 将反射时的checked exception转换为unchecked exception.
+     *
+     * @param e checked exception
+     * @return unchecked exception
      */
     public static RuntimeException convertReflectionExceptionToUnchecked(Exception e) {
         if (e instanceof IllegalAccessException || e instanceof IllegalArgumentException

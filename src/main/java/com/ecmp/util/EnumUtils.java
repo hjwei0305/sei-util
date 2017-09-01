@@ -9,16 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * *************************************************************************************************<br>
- * <br>
- * 实现功能：<br>
- * <br>
- * ------------------------------------------------------------------------------------------------<br>
- * 版本          变更时间             变更人                     变更原因<br>
- * ------------------------------------------------------------------------------------------------<br>
- * 1.0.00      2017/4/27 13:41      马超(Vision.Mac)                新建
- * <br>
- * *************************************************************************************************
+ * <strong>实现功能:</strong>.
+ * <p>枚举工具类</p>
+ *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017/4/27 13:41
  */
 @SuppressWarnings("unchecked")
 public class EnumUtils {
@@ -26,6 +21,9 @@ public class EnumUtils {
 
     /**
      * 基于Enum类返回对应的key-value Map构建对象
+     *
+     * @param enumClass 枚举类
+     * @return 返回枚举实体对象&lt;EnumEntity&gt;集合
      */
     public static List<EnumEntity> getEnumDataList(Class<? extends Enum> enumClass) {
         List<EnumEntity> enumEntities = null;
@@ -34,7 +32,6 @@ public class EnumUtils {
             if (enumEntities != null) {
                 return enumEntities;
             }
-            EnumEntity enumEntity;
             enumEntities = new ArrayList<EnumEntity>();
             Field[] fields = enumClass.getFields();
             for (Field field : fields) {

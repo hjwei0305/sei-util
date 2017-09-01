@@ -14,33 +14,27 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 /**
- * *************************************************************************************************
- * <p/>
+ * <strong>实现功能:</strong>.
+ * <p>
  * 实现功能：
  * JSON的工具类
- * <p/>
  * <h3>Here is an example:</h3>
- * <p/>
  * <pre>
  *     // 将json通过类型转换成对象
  *     {@link JsonUtils JsonUtil}.fromJson("{\"username\":\"username\", \"password\":\"password\"}", User.class);
  * </pre>
- * <hr />
  * <pre>
  *     // 传入转换的引用类型
  *     {@link JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference&lt;List&lt;User&gt;&gt;);
  * </pre>
- * <hr />
  * <pre>
  *     // 将对象转换成json
  *     {@link JsonUtils JsonUtil}.toJson(user);
  * </pre>
- * <hr />
  * <pre>
  *     // 将对象转换成json, 可以设置输出属性
  *     {@link JsonUtils JsonUtil}.toJson(user, {@link JsonInclude.Include ALWAYS});
  * </pre>
- * <hr />
  * <pre>
  *     // 将对象转换成json, 传入配置对象
  *     {@link ObjectMapper ObjectMapper} mapper = new ObjectMapper();
@@ -50,24 +44,18 @@ import java.util.TimeZone;
  *     mapper.setDateFormat(new {@link SimpleDateFormat SimpleDateFormat}("yyyy-MM-dd HH:mm:ss"));
  *     {@link JsonUtils JsonUtil}.toJson(user, mapper);
  * </pre>
- * <hr />
  * <pre>
  *     // 获取Mapper对象
  *     {@link JsonUtils JsonUtil}.mapper();
  * </pre>
  *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017-04-14 16:12
  * @see DeserializationFeature Feature
  * @see ObjectMapper ObjectMapper
  * @see JsonInclude.Include
  * @see IOException IOException
  * @see SimpleDateFormat SimpleDateFormat
- * <p/>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017-04-14 16:12      马超(Vision.Mac)                新建
- * <p/>
- * *************************************************************************************************
  */
 @SuppressWarnings("unchecked")
 public final class JsonUtils {
@@ -82,11 +70,11 @@ public final class JsonUtils {
 
     /**
      * 将json通过类型转换成对象
-     * <p/>
      * <pre>
      *     {@link JsonUtils JsonUtil}.fromJson("{\"username\":\"username\", \"password\":\"password\"}", User.class);
      * </pre>
      *
+     * @param <T>   泛型
      * @param json  json字符串
      * @param clazz 泛型类型
      * @return 返回对象
@@ -105,11 +93,10 @@ public final class JsonUtils {
 
     /**
      * 将json通过类型转换成集合对象
-     * <p/>
      * <pre>
-     *     {@link JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference<List<User>>);
+     *     {@link JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference&lt;List&lt;User&gt;&gt;);
      * </pre>
-     *
+     * @param <T> 泛型
      * @param json          json字符串
      * @param typeReference 引用类型
      * @return 返回对象
@@ -128,11 +115,10 @@ public final class JsonUtils {
 
     /**
      * 将对象转换成json
-     * <p/>
      * <pre>
      *     {@link JsonUtils JsonUtil}.toJson(user);
      * </pre>
-     *
+     * @param <T> 泛型
      * @param src 对象
      * @return 返回json字符串
      */
@@ -146,11 +132,9 @@ public final class JsonUtils {
 
     /**
      * 将对象转换成json, 可以设置输出属性
-     * <p/>
      * <pre>
      *     {@link JsonUtils JsonUtil}.toJson(user, {@link JsonInclude Inclusion.ALWAYS});
      * </pre>
-     * <p/>
      * {@link JsonInclude Inclusion 对象枚举}
      * <ul>
      * <li>{@link JsonInclude.Include ALWAYS 全部列入}</li>
@@ -158,11 +142,13 @@ public final class JsonUtils {
      * <li>{@link JsonInclude.Include NON_EMPTY 字段为NULL或者""的时候不会列入}</li>
      * <li>{@link JsonInclude.Include NON_NULL 字段为NULL时候不会列入}</li>
      * </ul>
+     * <p>
      *
+     * @param <T>       泛型
      * @param src       对象
      * @param inclusion 传入一个枚举值, 设置输出属性
      * @return 返回json字符串
-     * @throws IOException
+     * @throws IOException IOException
      */
     public static <T> String toJson(T src, JsonInclude.Include inclusion) throws IOException {
         if (src instanceof String) {
@@ -175,7 +161,6 @@ public final class JsonUtils {
 
     /**
      * 将对象转换成json, 传入配置对象
-     * <p/>
      * <pre>
      *     {@link ObjectMapper ObjectMapper} mapper = new ObjectMapper();
      *     mapper.setSerializationInclusion({@link JsonInclude.Include ALWAYS});
@@ -184,13 +169,13 @@ public final class JsonUtils {
      *     mapper.setDateFormat(new {@link SimpleDateFormat SimpleDateFormat}("yyyy-MM-dd HH:mm:ss"));
      *     {@link JsonUtils JsonUtil}.toJson(user, mapper);
      * </pre>
-     * <p/>
      * {@link ObjectMapper ObjectMapper}
      *
+     * @param <T>    泛型
      * @param src    对象
      * @param mapper 配置对象
      * @return 返回json字符串
-     * @throws IOException
+     * @throws IOException IOException
      * @see ObjectMapper
      */
     public static <T> String toJson(T src, ObjectMapper mapper) throws IOException {

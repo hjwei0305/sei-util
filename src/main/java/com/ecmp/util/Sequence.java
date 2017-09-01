@@ -8,18 +8,13 @@ import java.net.NetworkInterface;
 import java.util.logging.Logger;
 
 /**
- * *************************************************************************************************
- * <p>
+ * <strong>实现功能:</strong>.
  * 实现功能：
  * 分布式高效有序ID生产黑科技(sequence) <br>
  * 优化开源项目：http://git.oschina.net/yu120/sequence
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/03/07 15:13      马超(Vision)                新建
- * <p>
- * *************************************************************************************************
+ *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017/03/07 15:13
  */
 public class Sequence {
     protected final static Logger logger = Logger.getLogger("Sequence");
@@ -67,9 +62,7 @@ public class Sequence {
     }
 
     /**
-     * 获取下一个ID
-     *
-     * @return
+     * @return 获取下一个ID
      */
     public synchronized long nextId() {
         long timestamp = timeGen();
@@ -105,9 +98,11 @@ public class Sequence {
     }
 
     /**
-     * <p>
      * 获取 maxWorkerId
-     * </p>
+     *
+     * @param datacenterId 序号
+     * @param maxWorkerId  机器号
+     * @return 返回机器号
      */
     protected static long getMaxWorkerId(long datacenterId, long maxWorkerId) {
         StringBuffer mpid = new StringBuffer();
@@ -126,9 +121,10 @@ public class Sequence {
     }
 
     /**
-     * <p>
      * 数据标识id部分
-     * </p>
+     *
+     * @param maxDatacenterId 最大序号
+     * @return 返回下一个序号
      */
     protected static long getDatacenterId(long maxDatacenterId) {
         long id = 0L;

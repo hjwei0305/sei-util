@@ -7,22 +7,15 @@ import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import java.security.SecureRandom;
 
 /**
- * *************************************************************************************************
- * <br>
- * 实现功能：
+ * <strong>实现功能:</strong>.
+ * <p>
  * 封装各种生成唯一性ID算法的工具类.
  * 1.生产UUID
  * 2.生产随机数
- * <br>
- * ------------------------------------------------------------------------------------------------
- * <br>
- * 版本          变更时间             变更人                     变更原因
- * <br>
- * ------------------------------------------------------------------------------------------------
- * <br>
- * 1.0.00      2017/5/4 14:07      马超(Vision.Mac)                新建
- * <br>
- * *************************************************************************************************
+ * </p>
+ *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017/5/4 14:07
  */
 public class IdGenerator {
 
@@ -42,7 +35,9 @@ public class IdGenerator {
     }
 
     /**
-     * 封装fasterxml.uuid,生成有序的UUID, 中间有-分割.
+     * 封装fasterxml.uuid,生成有序的UUID.
+     *
+     * @return 返回UUID，中间有-分割
      */
     public static String uuid() {
         ensureGeneratorInitialized();
@@ -50,7 +45,9 @@ public class IdGenerator {
     }
 
     /**
-     * 封装fasterxml.uuid,生成有序的UUID, 中间无-分割.
+     * 封装fasterxml.uuid,生成有序的UUID.
+     *
+     * @return 返回UUID, 中间无-分割.
      */
     public static String uuid2() {
         ensureGeneratorInitialized();
@@ -60,13 +57,15 @@ public class IdGenerator {
     /**
      * 使用SecureRandom随机生成Long.
      * 不保证唯一性
+     *
+     * @return 随机数
      */
     public static long randomLong() {
         return Math.abs(random.nextLong());
     }
 
     public static void main(String[] args) {
-        for(int i=1;i<100;i++) {
+        for (int i = 1; i < 100; i++) {
             System.out.println(IdGenerator.uuid());
 //            System.out.println(IdGenerator.uuid2());
 //            System.out.println(IdGenerator.randomLong());

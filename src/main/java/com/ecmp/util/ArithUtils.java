@@ -58,7 +58,7 @@ public class ArithUtils {
      * @param value2 除数
      * @param scale  精确范围
      * @return 两个参数的商
-     * @throws IllegalAccessException
+     * @throws IllegalAccessException 参数错误
      */
     public static double div(double value1, double value2, int scale) throws IllegalAccessException {
         //如果精确范围小于0，抛出异常信息

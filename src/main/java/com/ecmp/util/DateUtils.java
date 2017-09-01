@@ -7,17 +7,11 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * *************************************************************************************************
- * <p>
- * 实现功能：
- * 日期时间工具类
- * <p>
- * ------------------------------------------------------------------------------------------------
- * 版本          变更时间             变更人                     变更原因
- * ------------------------------------------------------------------------------------------------
- * 1.0.00      2017/03/06 21:33      马超(Vision)                新建
- * <p>
- * *************************************************************************************************
+ * <strong>实现功能:</strong>.
+ * <p>日期时间工具类</p>
+ *
+ * @author 马超(Vision.Mac)
+ * @version 1.0.1 2017/03/06 21:33
  */
 public class DateUtils {
 
@@ -138,14 +132,10 @@ public class DateUtils {
     }
 
     /**
-     * @Title:getDiffDay
-     * @Description:获取日期相差天数
-     * @param:@param beginDate  字符串类型开始日期
-     * @param:@param endDate    字符串类型结束日期
-     * @param:@return
-     * @return:Long 日期相差天数
-     * @author:谢
-     * @thorws:
+     * 获取日期相差天数
+     * @param beginDate  字符串类型开始日期
+     * @param endDate    字符串类型结束日期
+     * @return Long 日期相差天数
      */
     public static Long getDiffDay(String beginDate, String endDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -162,14 +152,10 @@ public class DateUtils {
     }
 
     /**
-     * @Title:getDiffDay
-     * @Description:获取日期相差天数
-     * @param:@param beginDate Date类型开始日期
-     * @param:@param endDate   Date类型结束日期
-     * @param:@return
-     * @return:Long 相差天数
-     * @author: 谢
-     * @thorws:
+     * 获取日期相差天数
+     * @param beginDate Date类型开始日期
+     * @param endDate   Date类型结束日期
+     * @return Long 相差天数
      */
     public static Long getDiffDay(Date beginDate, Date endDate) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -182,9 +168,9 @@ public class DateUtils {
     /**
      * N天之后
      *
-     * @param n
-     * @param date
-     * @return
+     * @param n 天数
+     * @param date 日期
+     * @return n天之后
      */
     public static Date nDaysAfter(Integer n, Date date) {
         Calendar cal = Calendar.getInstance();
@@ -196,9 +182,9 @@ public class DateUtils {
     /**
      * N天之前
      *
-     * @param n
-     * @param date
-     * @return
+     * @param n 天数
+     * @param date 日期
+     * @return N天之后
      */
     public static Date nDaysAgo(Integer n, Date date) {
         Calendar cal = Calendar.getInstance();
