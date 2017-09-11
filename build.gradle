@@ -24,6 +24,7 @@ ext {
 
 dependencies {
     compile(
+            "commons-beanutils:commons-beanutils:$commons_beanutils_version",
             "org.apache.commons:commons-lang3:$commons_lang3_version",
             "commons-codec:commons-codec:$commons_codec_version",
 
