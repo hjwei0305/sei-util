@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 /**
  * <strong>实现功能:</strong>.
@@ -58,20 +57,17 @@ import java.util.TimeZone;
  * @see SimpleDateFormat SimpleDateFormat
  */
 @SuppressWarnings("unchecked")
-public final class JsonUtils {
+public abstract class JsonUtils {
     private static ObjectMapper MAPPER;
 
     static {
         MAPPER = generateMapper(JsonInclude.Include.ALWAYS);
     }
 
-    private JsonUtils() {
-    }
-
     /**
      * 将json通过类型转换成对象
      * <pre>
-     *     {@link JsonUtils JsonUtil}.fromJson("{\"username\":\"username\", \"password\":\"password\"}", User.class);
+     *     {@link com.ecmp.util.JsonUtils JsonUtil}.fromJson("{\"username\":\"username\", \"password\":\"password\"}", User.class);
      * </pre>
      *
      * @param <T>   泛型
@@ -94,9 +90,10 @@ public final class JsonUtils {
     /**
      * 将json通过类型转换成集合对象
      * <pre>
-     *     {@link JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference&lt;List&lt;User&gt;&gt;);
+     *     {@link com.ecmp.util.JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference&lt;List&lt;User&gt;&gt;);
      * </pre>
-     * @param <T> 泛型
+     *
+     * @param <T>           泛型
      * @param json          json字符串
      * @param typeReference 引用类型
      * @return 返回对象
@@ -116,8 +113,9 @@ public final class JsonUtils {
     /**
      * 将对象转换成json
      * <pre>
-     *     {@link JsonUtils JsonUtil}.toJson(user);
+     *     {@link com.ecmp.util.JsonUtils JsonUtil}.toJson(user);
      * </pre>
+     *
      * @param <T> 泛型
      * @param src 对象
      * @return 返回json字符串
@@ -133,7 +131,7 @@ public final class JsonUtils {
     /**
      * 将对象转换成json, 可以设置输出属性
      * <pre>
-     *     {@link JsonUtils JsonUtil}.toJson(user, {@link JsonInclude Inclusion.ALWAYS});
+     *     {@link com.ecmp.util.JsonUtils JsonUtil}.toJson(user, {@link JsonInclude Inclusion.ALWAYS});
      * </pre>
      * {@link JsonInclude Inclusion 对象枚举}
      * <ul>
@@ -167,7 +165,7 @@ public final class JsonUtils {
      *     mapper.configure({@link DeserializationFeature FAIL_ON_UNKNOWN_PROPERTIES}, false);
      *     mapper.configure({@link DeserializationFeature FAIL_ON_NUMBERS_FOR_ENUMS}, true);
      *     mapper.setDateFormat(new {@link SimpleDateFormat SimpleDateFormat}("yyyy-MM-dd HH:mm:ss"));
-     *     {@link JsonUtils JsonUtil}.toJson(user, mapper);
+     *     {@link com.ecmp.util.JsonUtils JsonUtil}.toJson(user, mapper);
      * </pre>
      * {@link ObjectMapper ObjectMapper}
      *
@@ -219,25 +217,29 @@ public final class JsonUtils {
         // 设置输出时包含属性的风格
         objectMapper.setSerializationInclusion(include);
         //空值不序列化
-//        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        //objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
 
         //去掉默认的时间戳格式
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        //objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         //设置为中国上海时区
-        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-        //反序列化时，属性不存在的兼容处理
-        objectMapper.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        //objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
         //序列化时，日期的统一格式
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
+        //空对象不要抛异常
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        //设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        // 禁止使用int代表Enum的order()來反序列化Enum,非常危險
-        objectMapper.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
+
         //单引号处理
         objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+
+        //反序列化时，属性不存在的兼容处理
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        //解决 hibernate 懒加载序列化问题
+        //Hibernate5Module hibernate5Module = new Hibernate5Module();
+        //hibernate5Module.disable(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
+        //objectMapper.registerModule(hibernate5Module);
 
         return objectMapper;
     }
