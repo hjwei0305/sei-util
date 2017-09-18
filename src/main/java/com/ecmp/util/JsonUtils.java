@@ -218,7 +218,8 @@ public abstract class JsonUtils {
         objectMapper.setSerializationInclusion(include);
         //空值不序列化
         //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        //objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+        //禁止把POJO中值为null的字段映射到json字符串中
+        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
 
         //去掉默认的时间戳格式
         //objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -234,6 +235,9 @@ public abstract class JsonUtils {
         objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
         //反序列化时，属性不存在的兼容处理
+        objectMapper.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        //设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         //解决 hibernate 懒加载序列化问题
