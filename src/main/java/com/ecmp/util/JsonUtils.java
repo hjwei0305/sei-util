@@ -1,16 +1,16 @@
 package com.ecmp.util;
 
-import com.ecmp.exception.EcmpException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <strong>实现功能:</strong>.
@@ -58,11 +58,6 @@ import java.text.SimpleDateFormat;
  */
 @SuppressWarnings("unchecked")
 public abstract class JsonUtils {
-    private static ObjectMapper MAPPER;
-
-    static {
-        MAPPER = generateMapper(JsonInclude.Include.ALWAYS);
-    }
 
     /**
      * 将json通过类型转换成对象
@@ -80,32 +75,60 @@ public abstract class JsonUtils {
             return null;
         } else {
             try {
-                return clazz.equals(String.class) ? (T) json : MAPPER.readValue(json, clazz);
+                ObjectMapper om = mapper();
+                return clazz.equals(String.class) ? (T) json : om.readValue(json, clazz);
             } catch (Exception e) {
-                throw new EcmpException(e.getMessage(), e);
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
     }
 
+//    /**
+//     * 将json通过类型转换成集合对象
+//     * <pre>
+//     *     {@link com.ecmp.util.JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference&lt;List&lt;User&gt;&gt;);
+//     * </pre>
+//     *
+//     * @param <T>           泛型
+//     * @param json          json字符串
+//     * @param typeReference 引用类型
+//     * @return 返回对象
+//     * @since 1.0.18
+//     * @deprecated
+//     */
+//    @Deprecated
+//    public static <T> T fromJson(String json, TypeReference<?> typeReference) {
+//        if (null == json || json.equals("")) {
+//            return null;
+//        } else {
+//            try {
+//                ObjectMapper om = mapper();
+//                return (T) (typeReference.getType().equals(String.class) ? json : om.readValue(json, typeReference));
+//            } catch (IOException e) {
+//                throw new RuntimeException(e.getMessage(), e);
+//            }
+//        }
+//    }
+
     /**
-     * 将json通过类型转换成集合对象
-     * <pre>
-     *     {@link com.ecmp.util.JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference&lt;List&lt;User&gt;&gt;);
-     * </pre>
+     * 将Json反序列化为List<T>
      *
-     * @param <T>           泛型
-     * @param json          json字符串
-     * @param typeReference 引用类型
-     * @return 返回对象
+     * @param <T>   泛型
+     * @param json  json字符串
+     * @param clazz 集合元素类型
+     * @return 返回集合对象
      */
-    public static <T> T fromJson(String json, TypeReference<?> typeReference) {
+    public static <T> List<T> fromJson2List(String json, Class<T> clazz) {
         if (null == json || json.equals("")) {
             return null;
         } else {
             try {
-                return (T) (typeReference.getType().equals(String.class) ? json : MAPPER.readValue(json, typeReference));
-            } catch (IOException e) {
-                throw new EcmpException(e.getMessage(), e);
+                ObjectMapper om = mapper();
+                JavaType javaType = om.getTypeFactory().constructParametricType(ArrayList.class, clazz);
+                return om.readValue(json, javaType);
+                //return om.readValue(json, new TypeReference<List<T>>() {});
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
     }
@@ -121,11 +144,19 @@ public abstract class JsonUtils {
      * @return 返回json字符串
      */
     public static <T> String toJson(T src) {
-        try {
-            return src instanceof String ? (String) src : MAPPER.writeValueAsString(src);
-        } catch (JsonProcessingException e) {
-            throw new EcmpException(e.getMessage(), e);
-        }
+        return toJson(src, null, (String[]) null);
+    }
+
+    /**
+     * 将对象转换成json
+     *
+     * @param <T>        泛型
+     * @param src        对象
+     * @param properties 过滤属性(排除的属性)
+     * @return 返回json字符串
+     */
+    public static <T> String toJson(T src, String... properties) {
+        return toJson(src, null, properties);
     }
 
     /**
@@ -146,14 +177,26 @@ public abstract class JsonUtils {
      * @param src       对象
      * @param inclusion 传入一个枚举值, 设置输出属性
      * @return 返回json字符串
-     * @throws IOException IOException
      */
-    public static <T> String toJson(T src, JsonInclude.Include inclusion) throws IOException {
+    public static <T> String toJson(T src, JsonInclude.Include inclusion, String... properties) {
+        if (null == src) {
+            return null;
+        }
+
         if (src instanceof String) {
             return (String) src;
         } else {
-            ObjectMapper customMapper = generateMapper(inclusion);
-            return customMapper.writeValueAsString(src);
+            try {
+                ObjectMapper om = generateMapper((null == inclusion) ? JsonInclude.Include.ALWAYS : inclusion);
+                if (null != properties && properties.length > 0) {
+                    FilterProvider fp = new SimpleFilterProvider().addFilter("customFilter", SimpleBeanPropertyFilter.serializeAllExcept(properties));
+                    om.setFilterProvider(fp);
+                }
+
+                return om.writeValueAsString(src);
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         }
     }
 
@@ -189,12 +232,39 @@ public abstract class JsonUtils {
     }
 
     /**
+     * 通过路径获取节点值
+     *
+     * @param json 需处理的Json字符串
+     * @param path 获取路径
+     * @return 返回指定路径获取节点值
+     */
+    public String getNodeString(String json, String path) {
+        String nodeStr;
+        if (json == null || json.trim().equals("")) {
+            return null;
+        }
+        if (path == null || path.trim().equals("")) {
+            return json;
+        }
+
+        try {
+            ObjectMapper om = new ObjectMapper();
+            JsonNode jn = om.readTree(json);
+            nodeStr = jn.path(path).toString();
+        } catch (Exception e) {
+            throw new RuntimeException("解析json错误");
+        }
+
+        return nodeStr;
+    }
+
+    /**
      * 返回{@link ObjectMapper ObjectMapper}对象, 用于定制性的操作
      *
      * @return {@link ObjectMapper ObjectMapper}对象
      */
     public static ObjectMapper mapper() {
-        return MAPPER;
+        return generateMapper(JsonInclude.Include.ALWAYS);
     }
 
     /**
@@ -216,10 +286,6 @@ public abstract class JsonUtils {
 
         // 设置输出时包含属性的风格
         objectMapper.setSerializationInclusion(include);
-        //空值不序列化
-        //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        //禁止把POJO中值为null的字段映射到json字符串中
-        objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
 
         //去掉默认的时间戳格式
         //objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -235,15 +301,25 @@ public abstract class JsonUtils {
         objectMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 
         //反序列化时，属性不存在的兼容处理
-        objectMapper.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        //objectMapper.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         //设置输入时忽略在JSON字符串中存在但Java对象实际没有的属性
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
 
         //解决 hibernate 懒加载序列化问题
         //Hibernate5Module hibernate5Module = new Hibernate5Module();
         //hibernate5Module.disable(Hibernate5Module.Feature.SERIALIZE_IDENTIFIER_FOR_LAZY_NOT_LOADED_OBJECTS);
         //objectMapper.registerModule(hibernate5Module);
+
+        /*objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
+            @Override
+            public void serialize(Object o, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+                jsonGenerator.writeString("");
+            }
+        });*/
 
         return objectMapper;
     }
