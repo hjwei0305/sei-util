@@ -43,9 +43,11 @@ public class EnumUtils {
                     remark = field.getName();
                 }
 
-                String name = field.getName();
-                Enum anEnum = Enum.valueOf(enumClass, name);
-                enumEntities.add(new EnumEntity(anEnum.ordinal(), name, remark, anEnum));
+                if (enumClass == field.getType()) {
+                    String name = field.getName();
+                    Enum anEnum = Enum.valueOf(enumClass, name);
+                    enumEntities.add(new EnumEntity(anEnum.ordinal(), name, remark, anEnum));
+                }
             }
             enumDatasContainer.put(enumClass, enumEntities);
         }
