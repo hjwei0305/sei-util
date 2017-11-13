@@ -25,6 +25,8 @@ public class DateUtils {
 
     public final static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
 
+    public final static String DEFAULT_ONLY_TIME_FORMAT = "HH:mm:ss";
+
     public final static String SHORT_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 
     public final static String FULL_SEQ_FORMAT = "yyyyMMddHHmmssSSS";
@@ -133,13 +135,14 @@ public class DateUtils {
 
     /**
      * 获取日期相差天数
-     * @param beginDate  字符串类型开始日期
-     * @param endDate    字符串类型结束日期
+     *
+     * @param beginDate 字符串类型开始日期
+     * @param endDate   字符串类型结束日期
      * @return Long 日期相差天数
      */
     public static Long getDiffDay(String beginDate, String endDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        Long checkday = 0l;
+        Long checkday = 0L;
         //开始结束相差天数
         try {
             checkday = (formatter.parse(endDate).getTime() - formatter.parse(beginDate).getTime()) / (1000 * 24 * 60 * 60);
@@ -153,6 +156,7 @@ public class DateUtils {
 
     /**
      * 获取日期相差天数
+     *
      * @param beginDate Date类型开始日期
      * @param endDate   Date类型结束日期
      * @return Long 相差天数
@@ -168,7 +172,7 @@ public class DateUtils {
     /**
      * N天之后
      *
-     * @param n 天数
+     * @param n    天数
      * @param date 日期
      * @return n天之后
      */
@@ -182,7 +186,7 @@ public class DateUtils {
     /**
      * N天之前
      *
-     * @param n 天数
+     * @param n    天数
      * @param date 日期
      * @return N天之后
      */
@@ -199,11 +203,44 @@ public class DateUtils {
         return Integer.valueOf(formatDate(date, FORMAT_YYYY) + c.get(Calendar.WEEK_OF_YEAR));
     }
 
+    /**
+     * 获取当前日期时间
+     *
+     * @return 返回当前日期时间
+     */
+    public static Date getCurrentDateTime() {
+        return new Date();
+    }
+
+    /**
+     * 获取当前日期
+     *
+     * @return 返回当前日期
+     */
+    public static Date getCurrentDate() {
+        Calendar calendar = Calendar.getInstance();
+        //获取年份
+        int year = calendar.get(Calendar.YEAR);
+        //获取月份
+        int month = calendar.get(Calendar.MONTH);
+        //获取日
+        int day = calendar.get(Calendar.DATE);
+        calendar.set(year, month, day, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
     public static void main(String[] args) {
-        Calendar c = Calendar.getInstance();
+        /*Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, 0);
         c.set(Calendar.DAY_OF_MONTH, 1);
-        System.out.println(DateUtils.formatDate(c.getTime(), DateUtils.FORMAT_YYYYMMDD));
+        System.out.println(DateUtils.formatDate(c.getTime(), DateUtils.FORMAT_YYYYMMDD));*/
+        Date date = getCurrentDate();
+        System.out.println(date);
+        System.out.println(formatDate(date, ISO_DATE_TIME_FORMAT));
+        date = getCurrentDateTime();
+        System.out.println(date);
+        System.out.println(formatDate(date, ISO_DATE_TIME_FORMAT));
     }
 
 }
