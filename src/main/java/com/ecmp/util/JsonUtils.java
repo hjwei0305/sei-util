@@ -264,7 +264,7 @@ public abstract class JsonUtils {
      * @return {@link ObjectMapper ObjectMapper}对象
      */
     public static ObjectMapper mapper() {
-        return generateMapper(JsonInclude.Include.ALWAYS);
+        return generateMapper(JsonInclude.Include.NON_NULL);
     }
 
     /**

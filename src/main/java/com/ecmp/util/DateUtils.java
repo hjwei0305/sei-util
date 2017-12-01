@@ -230,11 +230,35 @@ public class DateUtils {
         return calendar.getTime();
     }
 
+    /**
+     * 日期格式化为年月日的日期
+     *
+     * @param date 日期
+     * @return 年月日的日期
+     */
+    public static Date formatDate2Date(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        //获取年份
+        int year = calendar.get(Calendar.YEAR);
+        //获取月份
+        int month = calendar.get(Calendar.MONTH);
+        //获取日
+        int day = calendar.get(Calendar.DATE);
+        calendar.set(year, month, day, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
     public static void main(String[] args) {
-        /*Calendar c = Calendar.getInstance();
-        c.add(Calendar.MONTH, 0);
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, 1);
         c.set(Calendar.DAY_OF_MONTH, 1);
-        System.out.println(DateUtils.formatDate(c.getTime(), DateUtils.FORMAT_YYYYMMDD));*/
+        System.out.println(DateUtils.formatDate(c.getTime(), DateUtils.FORMAT_YYYYMMDD));
+        System.out.println(DateUtils.formatDate(c.getTime(), DateUtils.FULL_SEQ_FORMAT));
+
+        System.out.println(formatDate2Date(c.getTime()));
+
         Date date = getCurrentDate();
         System.out.println(date);
         System.out.println(formatDate(date, ISO_DATE_TIME_FORMAT));
