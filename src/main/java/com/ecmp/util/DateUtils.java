@@ -42,6 +42,13 @@ public class DateUtils {
 
     public final static String FORMAT_YYYYMMDDHH = "yyyyMMddHH";
 
+    /**
+     * 日期转字符串
+     * 默认格式: {@linkplain DateUtils#DEFAULT_DATE_FORMAT}
+     *
+     * @param date 日期对象
+     * @return 返回格式化字符串
+     */
     public static String formatDate(Date date) {
         if (date == null) {
             return "";
@@ -49,6 +56,13 @@ public class DateUtils {
         return new SimpleDateFormat(DEFAULT_DATE_FORMAT).format(date);
     }
 
+    /**
+     * 将日期时间对象转化为日期数字
+     *
+     * @param date   日期字符串 {@linkplain DateUtils#SHORT_TIME_FORMAT}
+     * @param format 格式字符串
+     * @return 返回日期数字
+     */
     public static String formatDate(Date date, String format) {
         if (date == null) {
             return null;
@@ -56,6 +70,13 @@ public class DateUtils {
         return new SimpleDateFormat(format).format(date);
     }
 
+    /**
+     * 将日期时间对象转化为日期数字
+     *
+     * @param date   日期字符串 {@linkplain DateUtils#SHORT_TIME_FORMAT}
+     * @param format 格式字符串
+     * @return 返回日期数字
+     */
     public static Integer formatDateToInt(Date date, String format) {
         if (date == null) {
             return null;
@@ -63,6 +84,13 @@ public class DateUtils {
         return Integer.valueOf(new SimpleDateFormat(format).format(date));
     }
 
+    /**
+     * 将日期时间对象转化为日期数字
+     *
+     * @param date   日期字符串 {@linkplain DateUtils#SHORT_TIME_FORMAT}
+     * @param format 格式字符串
+     * @return 返回日期数字
+     */
     public static Long formatDateToLong(Date date, String format) {
         if (date == null) {
             return null;
@@ -70,6 +98,12 @@ public class DateUtils {
         return Long.valueOf(new SimpleDateFormat(format).format(date));
     }
 
+    /**
+     * 将日期时间对象转化为日期字符串
+     *
+     * @param date 日期字符串 {@linkplain DateUtils#DEFAULT_TIME_FORMAT}
+     * @return 返回日期字符串
+     */
     public static String formatTime(Date date) {
         if (date == null) {
             return null;
@@ -77,6 +111,12 @@ public class DateUtils {
         return new SimpleDateFormat(DEFAULT_TIME_FORMAT).format(date);
     }
 
+    /**
+     * 将日期时间对象转化为日期字符串
+     *
+     * @param date 日期字符串 {@linkplain DateUtils#SHORT_TIME_FORMAT}
+     * @return 返回日期字符串
+     */
     public static String formatShortTime(Date date) {
         if (date == null) {
             return null;
@@ -84,6 +124,13 @@ public class DateUtils {
         return new SimpleDateFormat(SHORT_TIME_FORMAT).format(date);
     }
 
+    /**
+     * 将日期时间字符串转化为日期对象
+     *
+     * @param date   日期字符串
+     * @param format 格式串
+     * @return 返回日期对象
+     */
     public static Date parseDate(String date, String format) {
         if (date == null) {
             return null;
@@ -95,6 +142,13 @@ public class DateUtils {
         }
     }
 
+    /**
+     * 将日期时间字符串转化为日期对象
+     *
+     * @param date   日期字符串
+     * @param format 格式串
+     * @return 返回日期对象
+     */
     public static Date parseTime(String date, String format) {
         if (date == null) {
             return null;
@@ -106,14 +160,32 @@ public class DateUtils {
         }
     }
 
+    /**
+     * 将日期时间字符串转化为日期对象
+     *
+     * @param date 日期字符串 {@linkplain DateUtils#DEFAULT_TIME_FORMAT}
+     * @return 返回日期对象
+     */
     public static Date parseDate(String date) {
         return parseDate(date, DEFAULT_DATE_FORMAT);
     }
 
+    /**
+     * 将日期时间字符串转化为日期对象
+     *
+     * @param date 日期字符串 {@linkplain DateUtils#DEFAULT_TIME_FORMAT}
+     * @return 返回日期对象
+     */
     public static Date parseTime(String date) {
         return parseTime(date, DEFAULT_TIME_FORMAT);
     }
 
+    /**
+     * 对差异时间的格式化显示，方便人工查看
+     *
+     * @param diffMillis 差异时间(毫秒)
+     * @return 人能看懂的字符串
+     */
     public static String getHumanDisplayForTimediff(Long diffMillis) {
         if (diffMillis == null) {
             return "";
@@ -124,11 +196,11 @@ public class DateUtils {
         long se = (diffMillis / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
         StringBuilder sb = new StringBuilder();
         if (day > 0) {
-            sb.append(day + "D");
+            sb.append(day).append("D");
         }
         DecimalFormat df = new DecimalFormat("00");
-        sb.append(df.format(hour) + ":");
-        sb.append(df.format(min) + ":");
+        sb.append(df.format(hour)).append(":");
+        sb.append(df.format(min)).append(":");
         sb.append(df.format(se));
         return sb.toString();
     }
@@ -141,7 +213,7 @@ public class DateUtils {
      * @return Long 日期相差天数
      */
     public static Long getDiffDay(String beginDate, String endDate) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
         Long checkday = 0L;
         //开始结束相差天数
         try {
@@ -162,7 +234,7 @@ public class DateUtils {
      * @return Long 相差天数
      */
     public static Long getDiffDay(Date beginDate, Date endDate) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
         String strBeginDate = format.format(beginDate);
 
         String strEndDate = format.format(endDate);
@@ -197,6 +269,12 @@ public class DateUtils {
         return cal.getTime();
     }
 
+    /**
+     * 指定日期在全年中的第几周
+     *
+     * @param date 日期
+     * @return 返回日期在这一年中的周数
+     */
     public static Integer getWeekOfYear(Date date) {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
