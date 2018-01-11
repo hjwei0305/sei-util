@@ -3,8 +3,7 @@ package com.ecmp.util;
 import java.math.BigDecimal;
 
 /**
- * <strong>实现功能:</strong>.
- * <p>算术工具类</p>
+ * 算术工具类.
  * 由于Java的简单类型不能够精确的对浮点数进行运算，这个工具类提供精确的浮点数运算，包括加减乘除和四舍五入
  *
  * @author 马超(Vision.Mac)
@@ -29,7 +28,7 @@ public class ArithUtils {
     public static double add(double value1, double value2) {
         BigDecimal b1 = new BigDecimal(value1);
         BigDecimal b2 = new BigDecimal(value2);
-        return b1.add(b2).doubleValue();
+        return round(b1.add(b2).doubleValue(), DEF_DIV_SCALE);
     }
 
     /**
@@ -54,7 +53,7 @@ public class ArithUtils {
     public static double sub(double value1, double value2) {
         BigDecimal b1 = new BigDecimal(value1);
         BigDecimal b2 = new BigDecimal(value2);
-        return b1.subtract(b2).doubleValue();
+        return round(b1.subtract(b2).doubleValue(), DEF_DIV_SCALE);
     }
 
     /**
@@ -79,7 +78,7 @@ public class ArithUtils {
     public static double mul(double value1, double value2) {
         BigDecimal b1 = new BigDecimal(value1);
         BigDecimal b2 = new BigDecimal(value2);
-        return b1.multiply(b2).doubleValue();
+        return round(b1.multiply(b2).doubleValue(), DEF_DIV_SCALE);
     }
 
     /**
