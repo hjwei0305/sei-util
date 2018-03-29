@@ -119,7 +119,7 @@ public class ArithUtils {
         }
         BigDecimal b1 = new BigDecimal(value1);
         BigDecimal b2 = new BigDecimal(value2);
-        return b1.divide(b2, scale).doubleValue();
+        return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     /**
