@@ -37,15 +37,10 @@ dependencies {
             "org.jodd:jodd-bean:$jodd_version",
 
             "com.fasterxml.uuid:java-uuid-generator:$fasterxml_uuid_version"
-
-//            "org.apache.logging.log4j:log4j-api:$log4j_version",
-//            "org.apache.logging.log4j:log4j-core:$log4j_version",
-//            "org.apache.logging.log4j:log4j-slf4j-impl:$log4j_version"
     )
 
     // 测试依赖
     testCompile(
-            "org.springframework:spring-test:$spring_version",
             "junit:junit:$junit_version"
     )
 }
