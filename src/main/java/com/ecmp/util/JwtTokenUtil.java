@@ -64,7 +64,7 @@ public final class JwtTokenUtil {
     /**
      * 获取randomKey从token中
      */
-    public String getMd5KeyFromToken(String token) {
+    public String getRandomKeyFromToken(String token) {
         return getPrivateClaimFromToken(token, RANDOM_KEY);
     }
 
