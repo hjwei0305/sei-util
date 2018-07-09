@@ -24,8 +24,16 @@ public final class JwtTokenUtil {
     private String jwtSecret = "SecretKey_ECMP";
     private Integer jwtExpiration = 3600;
 
+    public String getJwtSecret() {
+        return jwtSecret;
+    }
+
     public void setJwtSecret(String jwtSecret) {
         this.jwtSecret = jwtSecret;
+    }
+
+    public Integer getJwtExpiration() {
+        return jwtExpiration;
     }
 
     public void setJwtExpiration(Integer jwtExpiration) {
