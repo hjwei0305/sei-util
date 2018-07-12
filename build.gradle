@@ -36,8 +36,6 @@ dependencies {
             "org.jodd:jodd-core:$jodd_version",
             "org.jodd:jodd-bean:$jodd_version",
 
-            "org.slf4j:slf4j-api:1.7.25",
-
             "com.fasterxml.uuid:java-uuid-generator:$fasterxml_uuid_version"
     )
 
