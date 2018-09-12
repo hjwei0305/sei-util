@@ -19,7 +19,7 @@ import java.util.Random;
  * com.ecmp.security.jwt.expiration：WT过期时间（秒），默认为3600s，一小时
  */
 public final class JwtTokenUtil {
-    private static final String RANDOM_KEY = "randomKey";
+    public static final String RANDOM_KEY = "randomKey";
 
     private String jwtSecret = "SecretKey_ECMP";
     private Integer jwtExpiration = 3600;
@@ -111,7 +111,7 @@ public final class JwtTokenUtil {
      * @return
      */
     private SecretKey generalKey() {
-        byte[] encodedKey = Base64.decodeBase64(jwtSecret);
+        byte[] encodedKey = Base64.encodeBase64(jwtSecret.getBytes());
         SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
         return key;
     }
@@ -170,4 +170,22 @@ public final class JwtTokenUtil {
         return refreshedToken;
     }
 
+    public static void main(String[] args) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("appId", "appId");
+        claims.put("tenant", "tenant");
+        claims.put("account", "account");
+        claims.put("userId", "userId");
+        claims.put("userName", "userName");
+        claims.put("userType", "userType");
+        claims.put("email", "email");
+        claims.put("authorityPolicy", "authorityPolicy");
+        claims.put("ip", "ip");
+
+        JwtTokenUtil jwtTokenUtil = new JwtTokenUtil();
+        String t = jwtTokenUtil.generateToken("admin", IdGenerator.uuid(), claims);
+        System.out.println("Token: " + t);
+        String account = jwtTokenUtil.getSubjectFromToken(t);
+        System.out.println(account);
+    }
 }
