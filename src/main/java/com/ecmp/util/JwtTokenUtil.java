@@ -22,7 +22,7 @@ public final class JwtTokenUtil {
     public static final String RANDOM_KEY = "randomKey";
 
     private String jwtSecret = "SecretKey_ECMP";
-    private Integer jwtExpiration = 3600;
+    private Integer jwtExpiration = 36000;
 
     public String getJwtSecret() {
         return jwtSecret;
