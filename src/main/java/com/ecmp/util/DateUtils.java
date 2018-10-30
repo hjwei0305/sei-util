@@ -42,6 +42,9 @@ public class DateUtils {
 
     public final static String FORMAT_YYYYMMDDHH = "yyyyMMddHH";
 
+    public final static String FORMAT_CORN = "ss mm HH dd MM ? yyyy";
+
+
     /**
      * 日期转字符串
      * 默认格式: {@linkplain DateUtils#DEFAULT_DATE_FORMAT}
@@ -68,6 +71,19 @@ public class DateUtils {
             return null;
         }
         return new SimpleDateFormat(format).format(date);
+    }
+
+    /**
+     * 将日期时间对象转化为corn表达式
+     *
+     * @param date 时间点
+     * @return convert Date to cron ,eg.  "0 06 10 15 10 ? 2018"
+     */
+    public static String formatDateToCorn(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return new SimpleDateFormat(FORMAT_CORN).format(date);
     }
 
     /**

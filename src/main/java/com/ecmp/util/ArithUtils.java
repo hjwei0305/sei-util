@@ -148,7 +148,7 @@ public class ArithUtils {
      * @return 四舍五入后的结果
      */
     public static String format(double v, int scale) {
-        StringBuilder bf = new StringBuilder("#.");
+        StringBuilder bf = new StringBuilder("0.");
         for (int i = 0; i < scale; i++) {
             bf.append("0");
         }
