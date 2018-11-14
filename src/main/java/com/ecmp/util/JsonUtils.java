@@ -287,11 +287,10 @@ public abstract class JsonUtils {
         // 设置输出时包含属性的风格
         objectMapper.setSerializationInclusion(include);
 
-        //去掉默认的时间戳格式
-        //objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         //设置为中国上海时区
         //objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        //序列化时，日期的统一格式
+        //取消时间的转化格式,默认是时间戳,可以取消,同时需要设置要表现的时间格式
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
         //空对象不要抛异常
