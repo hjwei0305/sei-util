@@ -25,11 +25,14 @@ import java.security.SecureRandom;
  * 10.将base 64 code AES解密
  */
 public class EncodeUtil {
+
+    public static final String DEFAULT_KEY = "SEI";
+
     public static void main(String[] args) throws Exception {
         String content = "测试";
         System.out.println("加密前：" + content);
 
-        String key = "123456789";
+        String key = "SEI";
         key = md5Encrypt(key);
         System.out.println("加密密钥和解密密钥：" + key);
 
