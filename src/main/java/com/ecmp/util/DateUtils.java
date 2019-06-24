@@ -272,6 +272,20 @@ public class DateUtils {
     }
 
     /**
+     * N年之后
+     *
+     * @param n    年数
+     * @param date 日期
+     * @return n年之后
+     */
+    public static Date nYearsAfter(Integer n, Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) + n);
+        return cal.getTime();
+    }
+
+    /**
      * N天之前
      *
      * @param n    天数
@@ -282,6 +296,20 @@ public class DateUtils {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - n);
+        return cal.getTime();
+    }
+
+    /**
+     * N年之前
+     *
+     * @param n    年数
+     * @param date 日期
+     * @return n年之前
+     */
+    public static Date nYearsAgo(Integer n, Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.YEAR, cal.get(Calendar.YEAR) - n);
         return cal.getTime();
     }
 
