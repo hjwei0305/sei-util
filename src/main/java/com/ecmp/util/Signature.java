@@ -1,13 +1,7 @@
 package com.ecmp.util;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 /**
  * 实现功能：
@@ -17,41 +11,43 @@ import java.nio.charset.StandardCharsets;
  */
 public class Signature {
 
-    /**
-     * 根据timestamp, appSecret计算签名值
-     */
-    public static String signature(String stringToSign, String appSecret) {
-        String urlEncodeSignature;
+    private static final char[] HEX = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+    private static String getFormattedText(byte[] bytes) {
+        int len = bytes.length;
+        StringBuilder buf = new StringBuilder(len * 2);
+        // 把密文转换成十六进制的字符串形式
+        for (byte aByte : bytes) {
+            buf.append(HEX[(aByte >> 4) & 0x0f]);
+            buf.append(HEX[aByte & 0x0f]);
+        }
+        return buf.toString();
+    }
+
+    public static String sign(String str) {
+        if (str == null) {
+            return null;
+        }
         try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(appSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            byte[] signatureBytes = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
-            String signature = new String(Base64.encodeBase64(signatureBytes));
-            urlEncodeSignature = urlEncode(signature);
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+            messageDigest.update(str.getBytes(StandardCharsets.UTF_8));
+            return getFormattedText(messageDigest.digest());
         } catch (Exception e) {
-            e.printStackTrace();
-            urlEncodeSignature = StringUtils.EMPTY;
+            throw new RuntimeException(e);
         }
-        return urlEncodeSignature;
     }
 
-    /**
-     * encoding参数使用utf-8
-     */
-    public static String urlEncode(String value) {
-        return urlEncode(value, StandardCharsets.UTF_8.name());
-    }
+    public static void main(String[] args) throws Exception {
+        String key = "noMobile";
+        String userLoginID = "gw00174324";
+        String stamp = "1558430160975";
+        String token = "ae74344ebb4e8235da400b9fd1bad221f0fd3c06";
+        String sha1Token = sign(key + userLoginID + stamp);
+        System.out.println(token.equals(sha1Token));
 
-    public static String urlEncode(String value, String encoding) {
-        if (value == null) {
-            return "";
-        }
-        try {
-            String encoded = URLEncoder.encode(value, encoding);
-            return encoded.replace("+", "%20").replace("*", "%2A")
-                    .replace("~", "%7E").replace("/", "%2F");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("FailedToEncodeUri", e);
-        }
+        String account = "CORP\\test001";
+        int idx = account.indexOf("\\");
+        account = account.substring(idx + 1);
+        System.out.println(account);
     }
 }
