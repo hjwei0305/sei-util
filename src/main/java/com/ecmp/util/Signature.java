@@ -20,7 +20,7 @@ public class Signature {
     /**
      * 根据timestamp, appSecret计算签名值
      */
-    private static String signature(String stringToSign, String appSecret) {
+    public static String signature(String stringToSign, String appSecret) {
         String urlEncodeSignature;
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
@@ -38,11 +38,11 @@ public class Signature {
     /**
      * encoding参数使用utf-8
      */
-    private static String urlEncode(String value) {
+    public static String urlEncode(String value) {
         return urlEncode(value, StandardCharsets.UTF_8.name());
     }
 
-    private static String urlEncode(String value, String encoding) {
+    public static String urlEncode(String value, String encoding) {
         if (value == null) {
             return "";
         }
