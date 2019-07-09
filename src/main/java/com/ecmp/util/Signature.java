@@ -10,12 +10,12 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 实现功能：签名算法类
+ * 实现功能：
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2019-07-05 15:20
  */
-public final class Signature {
+public class Signature {
 
     /**
      * 根据timestamp, appSecret计算签名值
