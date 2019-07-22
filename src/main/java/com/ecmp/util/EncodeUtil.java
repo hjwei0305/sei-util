@@ -1,8 +1,7 @@
 package com.ecmp.util;
 
 import org.apache.commons.lang3.StringUtils;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
@@ -62,7 +61,8 @@ public class EncodeUtil {
      * @return 编码后的base 64 code
      */
     public static String base64Encode(byte[] bytes) {
-        return new BASE64Encoder().encode(bytes);
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(bytes);
     }
 
     /**
@@ -73,7 +73,12 @@ public class EncodeUtil {
      * @throws Exception
      */
     public static byte[] base64Decode(String base64Code) throws Exception {
-        return StringUtils.isBlank(base64Code) ? null : new BASE64Decoder().decodeBuffer(base64Code);
+         if (StringUtils.isBlank(base64Code)) {
+             return null;
+         } else{
+             Base64.Decoder decoder = Base64.getDecoder();
+             return decoder.decode(base64Code);
+         }
     }
 
     /**
