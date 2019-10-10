@@ -1,14 +1,22 @@
 package com.ecmp.util;
 
+import org.apache.commons.codec.binary.Base64;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Base64;
 
 /**
  * 实现功能：
  * 实现文件或InputStream与base64编码字符串的相互转化
+ * 针对比较长的原文进行base64编码可以得到如下结论：
+ * jdk7的编码结果包含换行；
+ * jdk8的编码结果不包含换行；
+ * jdk8无法解码包含换行的编码结果;
+ * 因此,使用apache common包中的org.apache.commons.codec.binary.Base64类进行编码和解码；
+ * rfc1521、rfc2045和rfc4648关于base64的部分不一样
+ * https://blog.csdn.net/java_4_ever/article/details/80978089
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2019-08-22 17:18
@@ -29,7 +37,7 @@ public final class FileUtils {
 
         String str;
         byte[] b = Files.readAllBytes(Paths.get(file.getPath()));
-        str = Base64.getEncoder().encodeToString(b);
+        str = Base64.encodeBase64String(b);
         return str;
     }
 
@@ -62,51 +70,75 @@ public final class FileUtils {
             }
         }
         // 返回Base64编码过的字节数组字符串
-        str = Base64.getEncoder().encodeToString(data);
+        str = Base64.encodeBase64String(data);
 
         return str;
     }
 
     /**
-     * @param base64str Base64编码字符串
+     * @param base64Str Base64编码字符串
      * @param filePath  文件路径
      * @return 返回文件
      * @throws Exception
      */
-    public static File str2File(String base64str, String filePath) throws Exception {
-        if (base64str == null || base64str.trim().length() == 0) {
+    public static File str2File(String base64Str, String filePath) throws Exception {
+        if (base64Str == null || base64Str.trim().length() == 0) {
             return null;
         }
 
-        Files.write(Paths.get(filePath), Base64.getDecoder().decode(base64str), StandardOpenOption.CREATE);
+        byte[] decode = decodeBase64(base64Str);
+
+        Files.write(Paths.get(filePath), decode, StandardOpenOption.CREATE);
         File file = new File(filePath);
         return file;
     }
 
     /**
-     * @param base64str Base64编码字符串
+     * @param base64Str Base64编码字符串
      * @return 返回输入流
      * @throws IOException
      */
-    public static InputStream str2InputStream(String base64str) throws IOException {
-        if (base64str == null || base64str.trim().length() == 0) {
+    public static InputStream str2InputStream(String base64Str) throws IOException {
+        if (base64Str == null || base64Str.trim().length() == 0) {
             return null;
         }
 
         ByteArrayInputStream stream;
-        byte[] bytes1 = Base64.getDecoder().decode(base64str);
-        stream = new ByteArrayInputStream(bytes1);
+        byte[] decode = decodeBase64(base64Str);
+        stream = new ByteArrayInputStream(decode);
         return stream;
     }
 
+    public static byte[] decodeBase64(String base64Str) {
+        byte[] decode;
+        if (base64Str.contains("image")) {
+            if (base64Str.contains("data:image/bmp;base64,")) {
+                decode = Base64.decodeBase64(base64Str.replaceAll("data:image/bmp;base64,", ""));
+            } else {
+                if (base64Str.contains("data:image/jpeg;base64,")) {
+                    decode = Base64.decodeBase64(base64Str.replaceAll("data:image/jpeg;base64,", ""));
+                } else {
+                    if (base64Str.contains("data:image/png;base64,")) {
+                        decode = Base64.decodeBase64(base64Str.replaceAll("data:image/png;base64,", ""));
+                    } else {
+                        decode = Base64.decodeBase64(base64Str.replaceAll("data:image/jpg;base64,", ""));
+                    }
+                }
+            }
+        } else {
+            decode = Base64.decodeBase64(base64Str);
+        }
+        return decode;
+    }
+
     public static void main(String[] args) {
-        File file = new File("/Users/chaoma/Downloads/移动组工作清单.docx");
+        File file = new File("/Users/chaoma/Downloads/电子档案单附件批量下载及附件水印功能需求规格说明.doc");
         String s = null;
         try {
             s = FileUtils.file2Str(file);
 
             InputStream stream = FileUtils.str2InputStream(s);
-            File file1 = new File("/Users/chaoma/Downloads/123.docx");
+            File file1 = new File("/Users/chaoma/Downloads/123.doc");
             OutputStream os = new FileOutputStream(file1);
             int bytesRead = 0;
             byte[] buffer = new byte[8192];
@@ -122,7 +154,7 @@ public final class FileUtils {
             System.out.println(s1);
             System.out.println(s.equals(s1));
 
-            File file2 = FileUtils.str2File(s1, "/Users/chaoma/Downloads/12.docx");
+            File file2 = FileUtils.str2File(s1, "/Users/chaoma/Downloads/12.doc");
             System.out.println(file2.getName());
         } catch (Exception e) {
             e.printStackTrace();
