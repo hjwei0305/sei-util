@@ -110,6 +110,9 @@ public final class FileUtils {
     }
 
     public static byte[] decodeBase64(String base64Str) {
+        if (base64Str == null || base64Str.trim().length() == 0) {
+            throw new IllegalArgumentException("not null.");
+        }
         byte[] decode;
         if (base64Str.contains("image")) {
             if (base64Str.contains("data:image/bmp;base64,")) {
