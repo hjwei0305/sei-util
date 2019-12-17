@@ -14,7 +14,7 @@ targetCompatibility = 1.8
 repositories {
     mavenLocal()
 
-    maven { url 'http://rddgit.changhong.com:8081/nexus/content/groups/ECMP_Group' }
+    maven { url 'http://rddgit.changhong.com/nexus/repository/SEI_Group/' }
 }
 
 //自定义属性
