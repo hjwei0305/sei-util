@@ -50,8 +50,8 @@ dependencies {
 
 jar {
     manifest {
-//        attributes("Created-By": "ecmp")
-        attributes("Implementation-Title": "ecmp-core")
+//        attributes("Created-By": "sei")
+        attributes("Implementation-Title": "sei-core")
 //        attributes("Implementation-Version": "1.0-SNAPSHOT")
         attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
     }
