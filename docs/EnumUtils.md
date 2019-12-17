@@ -19,7 +19,7 @@ public @interface MetaData {
 }
 ```
 
-## com.ecmp.util.EnumUtils.java
+## EnumUtils.java
 枚举工具类
 ``` java
 /**
