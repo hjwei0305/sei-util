@@ -6,11 +6,14 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <strong>实现功能:</strong>.
@@ -82,33 +85,6 @@ public abstract class JsonUtils {
             }
         }
     }
-
-//    /**
-//     * 将json通过类型转换成集合对象
-//     * <pre>
-//     *     {@link JsonUtils JsonUtil}.fromJson("[{\"username\":\"username\", \"password\":\"password\"}, {\"username\":\"username\", \"password\":\"password\"}]", new TypeReference&lt;List&lt;User&gt;&gt;);
-//     * </pre>
-//     *
-//     * @param <T>           泛型
-//     * @param json          json字符串
-//     * @param typeReference 引用类型
-//     * @return 返回对象
-//     * @since 1.0.18
-//     * @deprecated
-//     */
-//    @Deprecated
-//    public static <T> T fromJson(String json, TypeReference<?> typeReference) {
-//        if (null == json || json.equals("")) {
-//            return null;
-//        } else {
-//            try {
-//                ObjectMapper om = mapper();
-//                return (T) (typeReference.getType().equals(String.class) ? json : om.readValue(json, typeReference));
-//            } catch (IOException e) {
-//                throw new RuntimeException(e.getMessage(), e);
-//            }
-//        }
-//    }
 
     /**
      * 将Json反序列化为List<T>
@@ -321,5 +297,33 @@ public abstract class JsonUtils {
         });*/
 
         return objectMapper;
+    }
+
+    /**
+     * 通过JSON序列化克隆
+     * @param fromObj 源对象
+     * @param <T> 可序列化类
+     * @return 克隆的对象
+     */
+    public static  <T extends Serializable> T cloneByJson(T fromObj) {
+        if (Objects.isNull(fromObj)){
+            return null;
+        }
+        String json = JsonUtils.toJson(fromObj);
+        return (T)JsonUtils.fromJson(json, fromObj.getClass());
+    }
+
+    /**
+     * 通过JSON序列化克隆
+     * @param fromObj 源对象
+     * @param <T> 可序列化类
+     * @return 克隆的对象
+     */
+    public static  <T extends Serializable> List<T> cloneByJson(List<T> fromObj) {
+        if (CollectionUtils.isEmpty(fromObj)){
+            return new ArrayList<>();
+        }
+        String json = JsonUtils.toJson(fromObj);
+        return (List<T>) JsonUtils.fromJson2List(json, fromObj.get(0).getClass());
     }
 }
