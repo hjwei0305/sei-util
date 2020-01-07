@@ -2,6 +2,7 @@ package com.chonghong.sei.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -100,12 +102,50 @@ public abstract class JsonUtils {
         } else {
             try {
                 ObjectMapper om = mapper();
-                JavaType javaType = om.getTypeFactory().constructParametricType(ArrayList.class, clazz);
+//                JavaType javaType = om.getTypeFactory().constructParametricType(ArrayList.class, clazz);
+                JavaType javaType = om.getTypeFactory().constructCollectionType(List.class, clazz);
                 return om.readValue(json, javaType);
                 //return om.readValue(json, new TypeReference<List<T>>() {});
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
+        }
+    }
+
+    public static Map<String, Object> object2Map(Object o) {
+        ObjectMapper om = mapper();
+        return om.convertValue(o, Map.class);
+    }
+
+    /**
+     * 将 json 字段串转换为 数据.
+     */
+    public static <T> T[] json2Array(String json, Class<T[]> clazz) throws IOException {
+        ObjectMapper om = mapper();
+        return om.readValue(json, clazz);
+
+    }
+
+    public static <T> T node2Object(JsonNode jsonNode, Class<T> clazz) {
+        try {
+            ObjectMapper om = mapper();
+            T t = om.treeToValue(jsonNode, clazz);
+            return t;
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("将 Json 转换为对象时异常,数据是:" + jsonNode.toString(), e);
+        }
+    }
+
+    public static JsonNode object2Node(Object o) {
+        try {
+            ObjectMapper om = mapper();
+            if (o == null) {
+                return om.createObjectNode();
+            } else {
+                return om.convertValue(o, JsonNode.class);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("不能序列化对象为Json", e);
         }
     }
 
@@ -301,26 +341,28 @@ public abstract class JsonUtils {
 
     /**
      * 通过JSON序列化克隆
+     *
      * @param fromObj 源对象
-     * @param <T> 可序列化类
+     * @param <T>     可序列化类
      * @return 克隆的对象
      */
-    public static  <T extends Serializable> T cloneByJson(T fromObj) {
-        if (Objects.isNull(fromObj)){
+    public static <T extends Serializable> T cloneByJson(T fromObj) {
+        if (Objects.isNull(fromObj)) {
             return null;
         }
         String json = JsonUtils.toJson(fromObj);
-        return (T)JsonUtils.fromJson(json, fromObj.getClass());
+        return (T) JsonUtils.fromJson(json, fromObj.getClass());
     }
 
     /**
      * 通过JSON序列化克隆
+     *
      * @param fromObj 源对象
-     * @param <T> 可序列化类
+     * @param <T>     可序列化类
      * @return 克隆的对象
      */
-    public static  <T extends Serializable> List<T> cloneByJson(List<T> fromObj) {
-        if (CollectionUtils.isEmpty(fromObj)){
+    public static <T extends Serializable> List<T> cloneByJson(List<T> fromObj) {
+        if (CollectionUtils.isEmpty(fromObj)) {
             return new ArrayList<>();
         }
         String json = JsonUtils.toJson(fromObj);

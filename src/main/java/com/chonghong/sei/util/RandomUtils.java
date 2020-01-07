@@ -8,7 +8,7 @@ import java.util.Date;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-07 13:30
  */
-public final class RandomUtil {
+public final class RandomUtils {
 
     public static long getInteger(long minValue, long maxValue) {
         return (long) (Math.random() * (maxValue - minValue + 1)) + minValue;
