@@ -46,21 +46,21 @@ public final class ThreadLocalUtil {
      * 读可传播的线程变量
      */
     public static String getTranVar(String key) {
-        return get(ThreadLocalHolder.TRAN_VAR, key.toLowerCase());
+        return get(ThreadLocalHolder.TRAN_VAR, key.toUpperCase());
     }
 
     /**
      * 写可传播的线程变量
      */
     public static void setTranVar(String key, String value) {
-        set(ThreadLocalHolder.TRAN_VAR, key.toLowerCase(), value);
+        set(ThreadLocalHolder.TRAN_VAR, key.toUpperCase(), value);
     }
 
     /**
      * 删可传播的线程变量
      */
     public static void removeTranVar(String key) {
-        remove(ThreadLocalHolder.TRAN_VAR, key.toLowerCase());
+        remove(ThreadLocalHolder.TRAN_VAR, key.toUpperCase());
     }
 
     @SuppressWarnings("unchecked")
