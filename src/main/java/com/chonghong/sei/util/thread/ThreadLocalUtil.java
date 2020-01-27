@@ -12,7 +12,7 @@ public final class ThreadLocalUtil {
     /**
      * 需跨应用传递参数在header信息中的前缀
      */
-    public static final String TRAN_PREFIX = "_tran_";
+    public static final String TRAN_PREFIX = "sei_t_";
 
     /**
      * 是否有效
@@ -46,21 +46,21 @@ public final class ThreadLocalUtil {
      * 读可传播的线程变量
      */
     public static String getTranVar(String key) {
-        return get(ThreadLocalHolder.TRAN_VAR, key.toUpperCase());
+        return get(ThreadLocalHolder.TRAN_VAR, key.toLowerCase());
     }
 
     /**
      * 写可传播的线程变量
      */
     public static void setTranVar(String key, String value) {
-        set(ThreadLocalHolder.TRAN_VAR, key.toUpperCase(), value);
+        set(ThreadLocalHolder.TRAN_VAR, key.toLowerCase(), value);
     }
 
     /**
      * 删可传播的线程变量
      */
     public static void removeTranVar(String key) {
-        remove(ThreadLocalHolder.TRAN_VAR, key.toUpperCase());
+        remove(ThreadLocalHolder.TRAN_VAR, key.toLowerCase());
     }
 
     @SuppressWarnings("unchecked")
