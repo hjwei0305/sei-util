@@ -28,7 +28,7 @@ dependencies {
             "commons-beanutils:commons-beanutils:$commons_beanutils_version",
             "org.apache.commons:commons-lang3:$commons_lang3_version",
             "commons-codec:commons-codec:$commons_codec_version",
-            "com.squareup.okhttp3:okhttp:$ok_http_version",
+//            "com.squareup.okhttp3:okhttp:$ok_http_version",
 
             "org.jodd:jodd-core:$jodd_version",
             "org.jodd:jodd-bean:$jodd_version",
