@@ -6,29 +6,47 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.CookieStore;
 import java.net.URLEncoder;
+import java.rmi.server.RemoteRef;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class OkHttpUtil {
-    private static final String CHARSET_NAME = "UTF-8";
+    public static final String CHARSET_NAME = "UTF-8";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private static final OkHttpClient okHttpClient = new OkHttpClient();
+    private static OkHttpUtil instance;
+    private OkHttpClient okHttpClient;
+
+    private OkHttpUtil() {
+        okHttpClient = new OkHttpClient.Builder().build();
+    }
+
+    public static OkHttpUtil getInstance() {
+        if (instance == null) {
+            synchronized (OkHttpUtil.class) {
+                if (instance == null) {
+                    instance = new OkHttpUtil();
+                }
+            }
+        }
+        return instance;
+    }
 
     public static String get(String url) throws Exception {
-        return getExecute(url,new HashMap<>());
+        return getExecute(url, new HashMap<>());
     }
 
-    public static String get(String url,Map<String,String> data) throws Exception {
-        url = getRequestUrl(url,data);
-        return getExecute(url,new HashMap<>());
+    public static String get(String url, Map<String, String> data) throws Exception {
+        url = getRequestUrl(url, data);
+        return getExecute(url, new HashMap<>());
     }
 
 
-    public static String getWithHeaders(String url,Map<String,String> headers) throws Exception {
-        return getExecute(url,headers);
+    public static String getWithHeaders(String url, Map<String, String> headers) throws Exception {
+        return getExecute(url, headers);
     }
 
     /**
@@ -39,7 +57,7 @@ public class OkHttpUtil {
      * @throws Exception
      */
     private static String getExecute(String url, Map<String, String> header) throws Exception {
-        if(Objects.isNull(header)){
+        if (Objects.isNull(header)) {
             header = new HashMap<>();
         }
         Headers headerBuild = Headers.of(header);
@@ -60,9 +78,9 @@ public class OkHttpUtil {
      * @return
      * @throws Exception
      */
-    public static String getWithHeaders(String url, Map<String, String> data,Map<String, String> header) throws Exception {
+    public static String getWithHeaders(String url, Map<String, String> data, Map<String, String> header) throws Exception {
         url = getRequestUrl(url, data);
-        return get(url,header);
+        return get(url, header);
     }
 
     /**
@@ -95,8 +113,8 @@ public class OkHttpUtil {
         enqueue(request, responseCallback);
     }
 
-    public static String post(String url, String json) throws IOException{
-        return postWithHeaders(url,json,new HashMap<>());
+    public static String post(String url, String json) throws IOException {
+        return postWithHeaders(url, json, new HashMap<>());
     }
 
     /**
@@ -108,11 +126,11 @@ public class OkHttpUtil {
      * @throws IOException
      */
     public static String postWithHeaders(String url, String json, Map<String, String> header) throws IOException {
-        if(Objects.isNull(header)){
+        if (Objects.isNull(header)) {
             header = new HashMap<>();
         }
         Headers headerBuild = Headers.of(header);
-        RequestBody body = RequestBody.create(json,JSON);
+        RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder().url(url).post(body).headers(headerBuild).build();
 
         Response response = execute(request);
@@ -123,14 +141,13 @@ public class OkHttpUtil {
         }
     }
 
-    public static String postWithHeaders(String url, Map<String, String> data,Map<String, String> header) throws IOException {
-        return post(url,data,header);
+    public static String postWithHeaders(String url, Map<String, String> data, Map<String, String> header) throws IOException {
+        return post(url, data, header);
     }
 
     public static String post(String url, Map<String, String> data) throws IOException {
-        return post(url,data,new HashMap<>());
+        return post(url, data, new HashMap<>());
     }
-
 
 
     /**
@@ -141,7 +158,7 @@ public class OkHttpUtil {
      * @return
      * @throws IOException
      */
-    private static String post(String url, Map<String, String> data,Map<String, String> header) throws IOException {
+    private static String post(String url, Map<String, String> data, Map<String, String> header) throws IOException {
         FormBody.Builder builder = new FormBody.Builder();
         for (Map.Entry<String, String> item : data.entrySet()) {
             builder.add(item.getKey(), item.getValue());
@@ -168,7 +185,7 @@ public class OkHttpUtil {
      * @throws IOException
      */
     public static void post(String url, String json, Callback responseCallback) throws IOException {
-        RequestBody body = RequestBody.create(json,JSON);
+        RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder().url(url).post(body).build();
 
         enqueue(request, responseCallback);
@@ -203,7 +220,7 @@ public class OkHttpUtil {
      * @throws IOException
      */
     public static String put(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(json,JSON);
+        RequestBody body = RequestBody.create(json, JSON);
 
         Request request = new Request.Builder().url(url).put(body).build();
 
@@ -248,7 +265,7 @@ public class OkHttpUtil {
      * @throws IOException
      */
     public static void put(String url, String json, Callback responseCallback) throws IOException {
-        RequestBody body = RequestBody.create(json,JSON);
+        RequestBody body = RequestBody.create(json, JSON);
 
         Request request = new Request.Builder().url(url).put(body).build();
         enqueue(request, responseCallback);
@@ -281,7 +298,7 @@ public class OkHttpUtil {
      * @throws IOException
      */
     public static Response execute(Request request) throws IOException {
-        return okHttpClient.newCall(request).execute();
+        return getInstance().okHttpClient.newCall(request).execute();
     }
 
     /**
@@ -291,7 +308,7 @@ public class OkHttpUtil {
      * @param responseCallback
      */
     public static void enqueue(Request request, Callback responseCallback) {
-        okHttpClient.newCall(request).enqueue(responseCallback);
+        getInstance().okHttpClient.newCall(request).enqueue(responseCallback);
     }
 
     /**
@@ -300,7 +317,7 @@ public class OkHttpUtil {
      * @param request
      */
     public static void enqueue(Request request) {
-        okHttpClient.newCall(request).enqueue(new Callback() {
+        getInstance().okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
@@ -344,15 +361,15 @@ public class OkHttpUtil {
 
 
     public static void main(String[] args) {
-        Map<String,String> params = new HashMap<>();
-        params.put("className","com.changhong.sei.configcenter.entity.Environment");
+        Map<String, String> params = new HashMap<>();
+        params.put("className", "com.changhong.sei.configcenter.entity.Environment");
 
-        Map<String,String> header = new HashMap<>();
-        header.put("Authorization","Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOIiwiZXhwIjoxNTgwNzkwNTAxfQ.RIqJDE4aPsfbUpE_8lJfLVQLgG57SzFZ-qLAwYggrEY");
+        Map<String, String> header = new HashMap<>();
+        header.put("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGgiOiJST0xFX0FETUlOIiwiZXhwIjoxNTgwNzkwNTAxfQ.RIqJDE4aPsfbUpE_8lJfLVQLgG57SzFZ-qLAwYggrEY");
         try {
             String result = OkHttpUtil.get("http://127.0.0.1:8080/config-center/serialNumberConfig/findByClassName", params);
-            String post="{\"createDate\":\"2020-02-04T02:15:53.891+0000\",\"createAccount\":\"admin\",\"editDate\":\"2020-02-04T02:15:53.891+0000\",\"editAccount\":\"admin\",\"id\":\"4028c683700a642c01700dc690a00000\",\"entityClassName\":\"com.changhong.sei.configcenter.entity.Environment\",\"name\":\"配置中心环境实体类2\",\"expressionConfig\":\"ENV${company}${YYYYMM}#{000000}\",\"initialSerial\":2,\"currentSerial\":0,\"genFlag\":false,\"cycleStrategy\":\"MAX_CYCLE\",\"activated\":true}";
-            String a = OkHttpUtil.postWithHeaders("http://127.0.0.1:8080/config-center/serialNumberConfig/save", post,header);
+            String post = "{\"createDate\":\"2020-02-04T02:15:53.891+0000\",\"createAccount\":\"admin\",\"editDate\":\"2020-02-04T02:15:53.891+0000\",\"editAccount\":\"admin\",\"id\":\"4028c683700a642c01700dc690a00000\",\"entityClassName\":\"com.changhong.sei.configcenter.entity.Environment\",\"name\":\"配置中心环境实体类2\",\"expressionConfig\":\"ENV${company}${YYYYMM}#{000000}\",\"initialSerial\":2,\"currentSerial\":0,\"genFlag\":false,\"cycleStrategy\":\"MAX_CYCLE\",\"activated\":true}";
+            String a = OkHttpUtil.postWithHeaders("http://127.0.0.1:8080/config-center/serialNumberConfig/save", post, header);
             System.out.println(a);
         } catch (Exception e) {
             e.printStackTrace();
