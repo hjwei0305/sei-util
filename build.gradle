@@ -24,6 +24,7 @@ ext {
 
 dependencies {
     compile(
+            "commons-io:commons-io:$commons_io_version",
             "commons-beanutils:commons-beanutils:$commons_beanutils_version",
             "org.apache.commons:commons-lang3:$commons_lang3_version",
             "commons-codec:commons-codec:$commons_codec_version",
@@ -33,6 +34,12 @@ dependencies {
             "org.jodd:jodd-bean:$jodd_version",
 
             "com.fasterxml.uuid:java-uuid-generator:$fasterxml_uuid_version"
+    )
+
+    // 文件内容检测提取相关
+    compile(
+            "org.apache.tika:tika-core:$tika_version",
+            "org.apache.tika:tika-parsers:$tika_version"
     )
 
     // 测试依赖
