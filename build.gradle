@@ -36,12 +36,6 @@ dependencies {
             "com.fasterxml.uuid:java-uuid-generator:$fasterxml_uuid_version"
     )
 
-    // 文件内容检测提取相关
-    compile(
-            "org.apache.tika:tika-core:$tika_version",
-            "org.apache.tika:tika-parsers:$tika_version"
-    )
-
     // 测试依赖
     testCompile(
             "junit:junit:$junit_version"

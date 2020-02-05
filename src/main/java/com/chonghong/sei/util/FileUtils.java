@@ -2,9 +2,6 @@ package com.chonghong.sei.util;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tika.Tika;
-import org.apache.tika.mime.MimeType;
-import org.apache.tika.mime.MimeTypes;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -67,22 +64,6 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
         }
         String ext = StringUtils.substring(fileName, StringUtils.lastIndexOf(fileName, DOT) + 1);
         return StringUtils.trimToEmpty(ext);
-    }
-
-    /**
-     * 获取扩展名
-     */
-    public static String getExtension(InputStream inputStream) {
-        try {
-            Tika tika = new Tika();
-            String contentType = tika.detect(inputStream);
-            MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-            MimeType mime = allTypes.forName(contentType);
-            return mime.getExtension().substring(1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     /**
