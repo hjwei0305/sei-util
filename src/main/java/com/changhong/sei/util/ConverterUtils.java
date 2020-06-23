@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -834,6 +835,14 @@ public final class ConverterUtils {
                 } else if ("java.util.Date".equals(type) || "date".equalsIgnoreCase(type)) {
                     if (value.toString().length() > 0) {
                         val = getAsDate(value);
+                    }
+                } else if ("java.time.LocalDate".equals(type) || "date8".equalsIgnoreCase(type)) {
+                    if (value.toString().length() > 0) {
+                        val = DateUtils.date2LocalDate(getAsDate(value));
+                    }
+                } else if ("java.time.LocalDateTime".equals(type) || "datetime8".equalsIgnoreCase(type)) {
+                    if (value.toString().length() > 0) {
+                        val = DateUtils.date2LocalDateTime(getAsDate(value));
                     }
                 } else {
                     val = value;
