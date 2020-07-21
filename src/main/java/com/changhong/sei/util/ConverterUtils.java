@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -70,7 +71,10 @@ public final class ConverterUtils {
                 return (Number) obj;
             } else if (obj instanceof Boolean) {
                 Boolean flag = (Boolean) obj;
-                return flag ? 1 : 0;
+                if (Boolean.TRUE.equals(flag)) {
+                    return 1;
+                }
+                return 0;
             } else if (obj instanceof String) {
                 try {
                     String text = (String) obj;
@@ -698,6 +702,10 @@ public final class ConverterUtils {
             return (Date) date;
         } else if (date instanceof java.sql.Timestamp) {
             return (Date) date;
+        } else if (date instanceof LocalDate) {
+            return DateUtils.localDate2Date((LocalDate) date);
+        } else if (date instanceof LocalDateTime) {
+            return DateUtils.localDateTime2Date((LocalDateTime) date);
         }
         String str = String.valueOf(date).trim();
         if ("".equals(str)) {
@@ -718,40 +726,9 @@ public final class ConverterUtils {
         try {
             result = format.parse(str);
         } catch (ParseException e) {
-            System.err.println("对象 " + str + " 转换成 Date 数据错误.");
+            throw new IllegalArgumentException("对象 " + str + " 转换成 Date 数据错误.");
         }
 
-        return result;
-    }
-
-    /**
-     * @param obj the object to use
-     * @param clz the type for conversion
-     */
-    @SuppressWarnings("unchecked")
-    public static <R> R cast(final Object obj, final Class<R> clz) {
-        R result = null;
-        if (Boolean.class.equals(clz) || boolean.class.equals(clz)) {
-            result = (R) getAsBoolean(obj);
-        } else if (Byte.class.equals(clz) || byte.class.equals(clz)) {
-            result = (R) getAsByte(obj);
-        } else if (Short.class.equals(clz) || short.class.equals(clz)) {
-            result = (R) getAsShort(obj);
-        } else if (Integer.class.equals(clz) || int.class.equals(clz)) {
-            result = (R) getAsInteger(obj);
-        } else if (Long.class.equals(clz) || long.class.equals(clz)) {
-            result = (R) getAsLong(obj);
-        } else if (Float.class.equals(clz) || float.class.equals(clz)) {
-            result = (R) getAsFloat(obj);
-        } else if (Double.class.equals(clz) || double.class.equals(clz)) {
-            result = (R) getAsDouble(obj);
-        } else if (BigInteger.class.equals(clz)) {
-            result = (R) getAsBigInteger(obj);
-        } else if (BigDecimal.class.equals(clz)) {
-            result = (R) getAsBigDecimal(obj);
-        } else if (String.class.equals(clz)) {
-            result = (R) getAsString(obj);
-        }
         return result;
     }
 
@@ -760,7 +737,7 @@ public final class ConverterUtils {
      * @param defaultValue return if the value is null or if the conversion fails
      */
     @SuppressWarnings("unchecked")
-    public static <R> R cast(final Object obj, R defaultValue) {
+    public static <R> R convert(final Object obj, R defaultValue) {
         R result = null;
         if (defaultValue == null) {
             return result;
@@ -790,65 +767,78 @@ public final class ConverterUtils {
         return result;
     }
 
-    public static <T> T convert(Class<T> type, final Object value) {
-        return cast(value, type);
+    /**
+     * @param value the object to use
+     * @param clz   the type for conversion
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T convert(Class<T> clz, final Object value) {
+        return (T) convert(clz.getTypeName(), value);
     }
 
     public static Object convert(String type, Object value) {
         Object val = null;
         if (value != null) {
-            try {
-                if ("java.lang.Byte".equals(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsByte(value);
-                    }
-                } else if ("java.lang.Short".equals(type) || "short".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsShort(value);
-                    }
-                } else if ("java.lang.Integer".equals(type) || "int".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsInteger(value);
-                    }
-                } else if ("java.lang.Long".equals(type) || "long".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsLong(value);
-                    }
-                } else if ("java.lang.Float".equals(type) || "float".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsFloat(value);
-                    }
-                } else if ("java.lang.Double".equals(type) || "double".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsDouble(value);
-                    }
-                } else if ("java.math.BigDecimal".equals(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsBigDecimal(value);
-                    }
-                } else if ("java.lang.Boolean".equals(type) || "boolean".equalsIgnoreCase(type) || "bool".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsBoolean(value);
-                    }
-                } else if ("java.lang.String".equals(type) || "string".equalsIgnoreCase(type) || "str".equalsIgnoreCase(type)) {
-                    val = getAsString(value);
-                } else if ("java.util.Date".equals(type) || "date".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
-                        val = getAsDate(value);
-                    }
-                } else if ("java.time.LocalDate".equals(type) || "date8".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
+            if ("java.lang.Byte".equals(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsByte(value);
+                }
+            } else if ("java.lang.Short".equals(type) || "short".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsShort(value);
+                }
+            } else if ("java.lang.Integer".equals(type) || "int".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsInteger(value);
+                }
+            } else if ("java.lang.Long".equals(type) || "long".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsLong(value);
+                }
+            } else if ("java.lang.Float".equals(type) || "float".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsFloat(value);
+                }
+            } else if ("java.lang.Double".equals(type) || "double".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsDouble(value);
+                }
+            } else if ("java.math.BigDecimal".equals(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsBigDecimal(value);
+                }
+            } else if ("java.lang.Boolean".equals(type) || "boolean".equalsIgnoreCase(type) || "bool".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsBoolean(value);
+                }
+            } else if ("java.lang.String".equals(type) || "string".equalsIgnoreCase(type) || "str".equalsIgnoreCase(type)) {
+                val = getAsString(value);
+            } else if ("java.util.Date".equals(type) || "date".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    val = getAsDate(value);
+                }
+            } else if ("java.time.LocalDate".equals(type) || "date8".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    if (value instanceof LocalDate) {
+                        val = value;
+                    } else if (value instanceof LocalDateTime) {
+                        val = ((LocalDateTime) value).toLocalDate();
+                    } else {
                         val = DateUtils.date2LocalDate(getAsDate(value));
                     }
-                } else if ("java.time.LocalDateTime".equals(type) || "datetime8".equalsIgnoreCase(type)) {
-                    if (value.toString().length() > 0) {
+                }
+            } else if ("java.time.LocalDateTime".equals(type) || "datetime8".equalsIgnoreCase(type)) {
+                if (value.toString().length() > 0) {
+                    if (value instanceof LocalDate) {
+                        val = ((LocalDate) value).atStartOfDay();
+                    } else if (value instanceof LocalDateTime) {
+                        val = value;
+                    } else {
                         val = DateUtils.date2LocalDateTime(getAsDate(value));
                     }
-                } else {
-                    val = value;
                 }
-            } catch (Exception e) {
-                throw new RuntimeException(e.getMessage(), e);
+            } else {
+                val = value;
             }
         }
         return val;
@@ -857,7 +847,7 @@ public final class ConverterUtils {
     public static void main(String[] args) {
         String value = "2020-6-3 12:3:55";
         Object obj;
-         obj = ConverterUtils.convert("date", value);
+        obj = ConverterUtils.convert(Date.class, value);
 
         System.out.println(obj);
     }
