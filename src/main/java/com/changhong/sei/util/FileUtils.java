@@ -1,5 +1,6 @@
 package com.changhong.sei.util;
 
+import com.changhong.sei.exception.ServiceException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,7 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 实现功能：
@@ -330,6 +333,90 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
             decode = Base64.decodeBase64(base64Str);
         }
         return decode;
+    }
+
+    public static ByteArrayOutputStream cloneInputStream(InputStream input) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = input.read(buffer)) > -1) {
+                baos.write(buffer, 0, len);
+            }
+            baos.flush();
+            return baos;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 拆分byte数组
+     *
+     * @param bytes 要拆分的数组
+     * @param size  要按几个组成一份
+     * @return
+     */
+    public static byte[][] splitBytes(byte[] bytes, int size) {
+        double splitLength = Double.parseDouble(size + "");
+        int arrayLength = (int) Math.ceil(bytes.length / splitLength);
+        byte[][] result = new byte[arrayLength][];
+        int from, to;
+        for (int i = 0; i < arrayLength; i++) {
+            from = (int) (i * splitLength);
+            to = (int) (from + splitLength);
+            if (to > bytes.length) {
+                to = bytes.length;
+            }
+            result[i] = Arrays.copyOfRange(bytes, from, to);
+        }
+        return result;
+    }
+
+    /**
+     * @param data      数据
+     * @param totalSize 数据流的大小
+     * @param chunkSize 每次读取数据流的大小
+     */
+    public static void splitChunks(final byte[] data, final long totalSize, final int chunkSize, byte[][] chunkData, Set<Integer> excludeChunks) {
+        //已经读取的数据的大小
+        int readSize = 0;
+        int size = chunkSize;
+        // 分块序号
+        int index = 0;
+        int len;
+        byte[] buffer = new byte[chunkSize];
+        try (InputStream stream = new ByteArrayInputStream(data)) {
+            while ((len = stream.read(buffer, 0, size)) > 0) {
+                readSize += len;
+                if (excludeChunks.contains(index)) {
+                    index++;
+                    buffer = new byte[size];
+                    continue;
+                }
+                chunkData[index++] = buffer;
+
+                //如果数据流的总长度减去已经读取的数据流的长度值小于每次读取数据流的设定的大小，那么就重新为buffer字节数组设定大小
+                if ((totalSize - readSize) < size) {
+                    //这样可以避免最终得到的数据的结尾处多出多余的空值
+                    size = (int) totalSize - readSize;
+                    buffer = new byte[size];
+                } else {
+                    buffer = new byte[size];
+                }
+            }
+        } catch (IOException e) {
+            throw new ServiceException("数据流分块异常", e);
+        }
     }
 
     public static void main(String[] args) {
