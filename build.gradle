@@ -33,6 +33,8 @@ dependencies {
             "com.fasterxml.uuid:java-uuid-generator:$fasterxml_uuid_version"
     )
 
+    implementation("org.slf4j:slf4j-api:1.7.25")
+
     // 测试依赖
     testCompile(
             "junit:junit:$junit_version"
