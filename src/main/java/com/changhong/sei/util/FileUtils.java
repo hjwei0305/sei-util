@@ -390,7 +390,7 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
     public static void splitChunks(final byte[] data, final long totalSize, final int chunkSize, byte[][] chunkData, Set<Integer> excludeChunks) {
         //已经读取的数据的大小
         int readSize = 0;
-        int size = chunkSize;
+        int size = totalSize > chunkSize ? chunkSize : data.length;
         // 分块序号
         int index = 0;
         int len;
