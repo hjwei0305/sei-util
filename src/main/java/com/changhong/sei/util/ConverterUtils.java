@@ -1,5 +1,7 @@
 package com.changhong.sei.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.NumberFormat;
@@ -8,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * <strong>实现功能:</strong>.
@@ -22,6 +25,80 @@ public final class ConverterUtils {
     }
 
     /**
+     * 转换为Enum对象<br>
+     * 如果给定的值为空，或者转换失败，返回默认值<code>null</code><br>
+     *
+     * @param clazz Enum的Class
+     * @param value 值
+     * @return Enum
+     */
+    public static <E extends Enum<E>> E toEnum(Class<E> clazz, Object value) {
+        return toEnum(clazz, value, null);
+    }
+
+    /**
+     * 转换为Enum对象<br>
+     * 如果给定的值为空，或者转换失败，返回默认值<br>
+     *
+     * @param clazz        Enum的Class
+     * @param value        值
+     * @param defaultValue 默认值
+     * @return Enum
+     */
+    public static <E extends Enum<E>> E toEnum(Class<E> clazz, Object value, E defaultValue) {
+        if (value == null) {
+            return defaultValue;
+        }
+        if (clazz.isAssignableFrom(value.getClass())) {
+            @SuppressWarnings("unchecked")
+            E myE = (E) value;
+            return myE;
+        }
+        final String valueStr = getAsString(value, null);
+        if (StringUtils.isEmpty(valueStr)) {
+            return defaultValue;
+        }
+        try {
+            return Enum.valueOf(clazz, valueStr);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * 转换为字符<br>
+     * 如果给定的值为null，或者转换失败，返回默认值<br>
+     * 转换失败不会报错
+     *
+     * @param value        被转换的值
+     * @param defaultValue 转换错误时的默认值
+     * @return 结果
+     */
+    public static Character toChar(Object value, Character defaultValue) {
+        if (null == value) {
+            return defaultValue;
+        }
+        if (value instanceof Character) {
+            return (Character) value;
+        }
+
+        final String valueStr = getAsString(value, null);
+        return StringUtils.isBlank(valueStr) ? defaultValue : valueStr.charAt(0);
+    }
+
+    /**
+     * 转换为字符<br>
+     * 如果给定的值为<code>null</code>，或者转换失败，返回默认值<code>null</code><br>
+     * 转换失败不会报错
+     *
+     * @param value 被转换的值
+     * @return 结果
+     */
+    public static Character toChar(Object value) {
+        return toChar(value, null);
+    }
+
+    /**
      * Gets a String from a Object in a null-safe manner.
      * <p>
      * The String is obtained via <code>toString</code>.
@@ -31,7 +108,11 @@ public final class ConverterUtils {
      */
     public static String getAsString(final Object obj) {
         if (obj != null) {
-            return obj.toString();
+            if (obj instanceof String) {
+                return (String) obj;
+            } else {
+                return obj.toString();
+            }
         }
         return null;
     }
@@ -195,6 +276,47 @@ public final class ConverterUtils {
             return defaultValue;
         }
         return booleanObject;
+    }
+
+    /**
+     * 转换为boolean<br>
+     * String支持的值为：true、false、yes、ok、no，1,0 如果给定的值为空，或者转换失败，返回默认值<br>
+     * 转换失败不会报错
+     *
+     * @param value        被转换的值
+     * @param defaultValue 转换错误时的默认值
+     * @return 结果
+     */
+    public static Boolean toBool(Object value, Boolean defaultValue) {
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        String valueStr = getAsString(value, null);
+        if (StringUtils.isBlank(valueStr)) {
+            return defaultValue;
+        }
+        valueStr = valueStr.trim().toLowerCase();
+        switch (valueStr) {
+            case "true":
+                return true;
+            case "false":
+                return false;
+            case "yes":
+                return true;
+            case "ok":
+                return true;
+            case "no":
+                return false;
+            case "1":
+                return true;
+            case "0":
+                return false;
+            default:
+                return defaultValue;
+        }
     }
 
     /**
@@ -733,6 +855,110 @@ public final class ConverterUtils {
     }
 
     /**
+     * 半角转全角
+     *
+     * @param input String.
+     * @return 全角字符串.
+     */
+    public static String toSBC(String input) {
+        return toSBC(input, null);
+    }
+
+    /**
+     * 半角转全角
+     *
+     * @param input         String
+     * @param notConvertSet 不替换的字符集合
+     * @return 全角字符串.
+     */
+    public static String toSBC(String input, Set<Character> notConvertSet) {
+        char[] c = input.toCharArray();
+        for (int i = 0; i < c.length; i++) {
+            if (null != notConvertSet && notConvertSet.contains(c[i])) {
+                // 跳过不替换的字符
+                continue;
+            }
+
+            if (c[i] == ' ') {
+                c[i] = '\u3000';
+            } else if (c[i] < '\177') {
+                c[i] = (char) (c[i] + 65248);
+
+            }
+        }
+        return new String(c);
+    }
+
+    /**
+     * 全角转半角
+     *
+     * @param input String.
+     * @return 半角字符串
+     */
+    public static String toDBC(String input) {
+        return toDBC(input, null);
+    }
+
+    /**
+     * 替换全角为半角
+     *
+     * @param text          文本
+     * @param notConvertSet 不替换的字符集合
+     * @return 替换后的字符
+     */
+    public static String toDBC(String text, Set<Character> notConvertSet) {
+        char[] c = text.toCharArray();
+        for (int i = 0; i < c.length; i++) {
+            if (null != notConvertSet && notConvertSet.contains(c[i])) {
+                // 跳过不替换的字符
+                continue;
+            }
+
+            if (c[i] == '\u3000') {
+                c[i] = ' ';
+            } else if (c[i] > '\uFF00' && c[i] < '\uFF5F') {
+                c[i] = (char) (c[i] - 65248);
+            }
+        }
+
+        return new String(c);
+    }
+
+    /**
+     * 数字金额大写转换 先写个完整的然后将如零拾替换成零
+     *
+     * @param n 数字
+     * @return 中文大写数字
+     */
+    public static String digitUppercase(double n) {
+        String[] fraction = {"角", "分"};
+        String[] digit = {"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"};
+        String[][] unit = {{"元", "万", "亿"}, {"", "拾", "佰", "仟"}};
+
+        String head = n < 0 ? "负" : "";
+        n = Math.abs(n);
+
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < fraction.length; i++) {
+            s.append((digit[(int) (Math.floor(n * 10 * Math.pow(10, i)) % 10)] + fraction[i]).replaceAll("(零.)+", ""));
+        }
+        if (s.length() < 1) {
+            s = new StringBuilder("整");
+        }
+        int integerPart = (int) Math.floor(n);
+
+        for (int i = 0; i < unit[0].length && integerPart > 0; i++) {
+            StringBuilder p = new StringBuilder();
+            for (int j = 0; j < unit[1].length && n > 0; j++) {
+                p.insert(0, digit[integerPart % 10] + unit[1][j]);
+                integerPart = integerPart / 10;
+            }
+            s.insert(0, p.toString().replaceAll("(零.)*零$", "").replaceAll("^$", "零") + unit[0][i]);
+        }
+        return head + s.toString().replaceAll("(零.)*零元", "元").replaceFirst("(零.)+", "").replaceAll("(零.)+", "零").replaceAll("^整$", "零元整");
+    }
+
+    /**
      * @param obj          the object to use
      * @param defaultValue return if the value is null or if the conversion fails
      */
@@ -743,19 +969,19 @@ public final class ConverterUtils {
             return result;
         }
         Class<?> clz = defaultValue.getClass();
-        if (Boolean.class.equals(clz) || boolean.class.equals(clz)) {
+        if (Boolean.class.equals(clz)) {
             result = (R) getAsBoolean(obj, (Boolean) defaultValue);
-        } else if (Byte.class.equals(clz) || byte.class.equals(clz)) {
+        } else if (Byte.class.equals(clz)) {
             result = (R) getAsByte(obj, (Byte) defaultValue);
-        } else if (Short.class.equals(clz) || short.class.equals(clz)) {
+        } else if (Short.class.equals(clz)) {
             result = (R) getAsShort(obj, (Short) defaultValue);
-        } else if (Integer.class.equals(clz) || int.class.equals(clz)) {
+        } else if (Integer.class.equals(clz)) {
             result = (R) getAsInteger(obj, (Integer) defaultValue);
-        } else if (Long.class.equals(clz) || long.class.equals(clz)) {
+        } else if (Long.class.equals(clz)) {
             result = (R) getAsLong(obj, (Long) defaultValue);
-        } else if (Float.class.equals(clz) || float.class.equals(clz)) {
+        } else if (Float.class.equals(clz)) {
             result = (R) getAsFloat(obj, (Float) defaultValue);
-        } else if (Double.class.equals(clz) || double.class.equals(clz)) {
+        } else if (Double.class.equals(clz)) {
             result = (R) getAsDouble(obj, (Double) defaultValue);
         } else if (BigInteger.class.equals(clz)) {
             result = (R) getAsBigInteger(obj, (BigInteger) defaultValue);
@@ -850,5 +1076,6 @@ public final class ConverterUtils {
         obj = ConverterUtils.convert(Date.class, value);
 
         System.out.println(obj);
+        System.out.println(digitUppercase(120.12));
     }
 }

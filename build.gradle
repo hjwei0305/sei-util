@@ -33,6 +33,9 @@ dependencies {
             "com.fasterxml.uuid:java-uuid-generator:$fasterxml_uuid_version"
     )
 
+    // 在使用线程池等会池化复用线程的执行组件情况下，提供ThreadLocal值的传递功能，解决异步执行时上下文传递的问题
+    compile("com.alibaba:transmittable-thread-local:2.11.5")
+
     implementation("org.slf4j:slf4j-api:1.7.25")
 
     // 测试依赖

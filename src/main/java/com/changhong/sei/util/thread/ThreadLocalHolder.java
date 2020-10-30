@@ -1,10 +1,12 @@
 package com.changhong.sei.util.thread;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 实现功能：本地线程全局变量存储
+ * 实现功能：本地线程全局变量存储,支持父子线程之间的数据传递
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-07 13:15
@@ -14,12 +16,12 @@ public final class ThreadLocalHolder {
     /**
      * 临时缓存线程变量
      */
-    protected static final ThreadLocal<Map<String, Object>> LOCAL_VAR = new ThreadLocal<>();
+    protected static final TransmittableThreadLocal<Map<String, Object>> LOCAL_VAR = new TransmittableThreadLocal<>();
 
     /**
      * 可传播的线程变量
      */
-    protected static final ThreadLocal<Map<String, Object>> TRAN_VAR = new ThreadLocal<>();
+    protected static final TransmittableThreadLocal<Map<String, Object>> TRAN_VAR = new TransmittableThreadLocal<>();
 
     public static Map<String, Object> getTranVars() {
         return TRAN_VAR.get();
