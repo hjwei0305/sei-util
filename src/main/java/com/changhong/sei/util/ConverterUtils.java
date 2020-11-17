@@ -969,6 +969,9 @@ public final class ConverterUtils {
 
     public static Object convert(String type, Object value) {
         Object val = null;
+        if (StringUtils.isBlank(type)) {
+            return value;
+        }
         if (value != null) {
             if ("java.lang.Byte".equals(type)) {
                 if (value.toString().length() > 0) {
