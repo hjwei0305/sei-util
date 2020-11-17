@@ -1,5 +1,6 @@
 package com.changhong.sei.util;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -204,7 +205,12 @@ public final class ConverterUtils {
             if (obj instanceof Boolean) {
                 return (Boolean) obj;
             } else if (obj instanceof String) {
-                return Boolean.valueOf((String) obj);
+                String temp = (String) obj;
+                if ("1".equals(temp)) {
+                    return Boolean.TRUE;
+                } else {
+                    return BooleanUtils.toBoolean(temp);
+                }
             } else if (obj instanceof Number) {
                 Number n = (Number) obj;
                 return (n.intValue() != 0) ? Boolean.TRUE : Boolean.FALSE;
@@ -276,47 +282,6 @@ public final class ConverterUtils {
             return defaultValue;
         }
         return booleanObject;
-    }
-
-    /**
-     * 转换为boolean<br>
-     * String支持的值为：true、false、yes、ok、no，1,0 如果给定的值为空，或者转换失败，返回默认值<br>
-     * 转换失败不会报错
-     *
-     * @param value        被转换的值
-     * @param defaultValue 转换错误时的默认值
-     * @return 结果
-     */
-    public static Boolean toBool(Object value, Boolean defaultValue) {
-        if (value == null) {
-            return defaultValue;
-        }
-        if (value instanceof Boolean) {
-            return (Boolean) value;
-        }
-        String valueStr = getAsString(value, null);
-        if (StringUtils.isBlank(valueStr)) {
-            return defaultValue;
-        }
-        valueStr = valueStr.trim().toLowerCase();
-        switch (valueStr) {
-            case "true":
-                return true;
-            case "false":
-                return false;
-            case "yes":
-                return true;
-            case "ok":
-                return true;
-            case "no":
-                return false;
-            case "1":
-                return true;
-            case "0":
-                return false;
-            default:
-                return defaultValue;
-        }
     }
 
     /**
