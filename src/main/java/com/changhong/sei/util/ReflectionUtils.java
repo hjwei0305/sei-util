@@ -1,12 +1,10 @@
 package com.changhong.sei.util;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,6 +61,30 @@ public final class ReflectionUtils {
     }
 
     /**
+     * 直接调用对象方法, 而忽略修饰符(private, protected)
+     */
+    public static Object invokeMethod(Object object, String methodName, Class<?>[] parameterTypes,
+                                      Object[] parameters) throws InvocationTargetException {
+
+        Method method = getDeclaredMethod(object, methodName, parameterTypes);
+
+        if (method == null) {
+            throw new IllegalArgumentException("Could not find method [" + methodName + "] on target [" + object + "]");
+        }
+
+        method.setAccessible(true);
+
+        try {
+            return method.invoke(object, parameters);
+        } catch (IllegalAccessException e) {
+            System.err.println("invokeMethod:" + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
      * 循环向上转型,获取对象的DeclaredField.
      */
     protected static Field getDeclaredField(final Object object, final String fieldName) {
@@ -75,21 +97,53 @@ public final class ReflectionUtils {
     /**
      * 循环向上转型,获取类的DeclaredField.
      */
-    @SuppressWarnings("unchecked")
-    protected static Field getDeclaredField(final Class clazz, final String fieldName) {
+    public static Field getDeclaredField(final Class<?> clazz, final String fieldName) {
         if (Objects.isNull(clazz)) {
             throw new IllegalArgumentException("clazz不能为空");
         }
         if (Objects.isNull(fieldName)) {
             throw new IllegalArgumentException("fieldName不能为空");
         }
-        for (Class superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
+        for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
             try {
                 return superClass.getDeclaredField(fieldName);
             } catch (NoSuchFieldException e) {
                 // Field不在当前类定义,继续向上转型
             }
         }
+        return null;
+    }
+
+    /**
+     * 循环向上转型,获取类的DeclaredField.
+     */
+    public static Field[] getDeclaredFields(final Class<?> clazz) {
+        if (Objects.isNull(clazz)) {
+            throw new IllegalArgumentException("clazz不能为空");
+        }
+        Field[] allFields = null;
+        for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
+            try {
+                allFields = ArrayUtils.addAll(allFields, superClass.getDeclaredFields());
+            } catch (SecurityException e) {
+                // Field不在当前类定义,继续向上转型
+            }
+        }
+        return allFields;
+    }
+
+    /**
+     * 循环向上转型, 获取对象的 DeclaredMethod
+     */
+    public static Method getDeclaredMethod(Object object, String methodName, Class<?>[] parameterTypes) {
+        for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
+            try {
+                return superClass.getDeclaredMethod(methodName, parameterTypes);
+            } catch (NoSuchMethodException e) {
+                //Method 不在当前类定义, 继续向上转型
+            }
+        }
+
         return null;
     }
 
@@ -109,8 +163,7 @@ public final class ReflectionUtils {
      * @return the first generic declaration, or Object.class if cannot be
      * determined
      */
-    @SuppressWarnings("unchecked")
-    public static Class getSuperClassGenricType(final Class clazz) {
+    public static Class<?> getSuperClassGenricType(final Class<?> clazz) {
         return getSuperClassGenricType(clazz, 0);
     }
 
@@ -123,8 +176,7 @@ public final class ReflectionUtils {
      * @return the index generic declaration, or Object.class if cannot be
      * determined
      */
-    @SuppressWarnings("unchecked")
-    public static Class getSuperClassGenricType(final Class clazz, final int index) {
+    public static Class<?> getSuperClassGenricType(final Class<?> clazz, final int index) {
         Type genType = clazz.getGenericSuperclass();
 
         if (!(genType instanceof ParameterizedType)) {
@@ -142,7 +194,7 @@ public final class ReflectionUtils {
             System.err.println(clazz.getSimpleName() + " not set the actual class on superclass generic parameter");
             return Object.class;
         }
-        return (Class) params[index];
+        return (Class<?>) params[index];
     }
 
     /**
@@ -151,9 +203,8 @@ public final class ReflectionUtils {
      * @param collection   来源集合.
      * @param propertyName 要提取的属性名.
      */
-    @SuppressWarnings("unchecked")
-    public static List fetchElementPropertyToList(final Collection collection, final String propertyName) throws Exception {
-        List list = new ArrayList();
+    public static List<Object> fetchElementPropertyToList(final Collection<Object> collection, final String propertyName) throws Exception {
+        List<Object> list = new ArrayList<>();
         for (Object obj : collection) {
             list.add(PropertyUtils.getProperty(obj, propertyName));
         }
@@ -168,10 +219,9 @@ public final class ReflectionUtils {
      * @param propertyName 要提取的属性名.
      * @param separator    分隔符.
      */
-    @SuppressWarnings("unchecked")
-    public static String fetchElementPropertyToString(final Collection collection, final String propertyName, final String separator)
+    public static String fetchElementPropertyToString(final Collection<Object> collection, final String propertyName, final String separator)
             throws Exception {
-        List list = fetchElementPropertyToList(collection, propertyName);
+        List<Object> list = fetchElementPropertyToList(collection, propertyName);
         return StringUtils.join(list.toArray(), separator);
     }
 }
