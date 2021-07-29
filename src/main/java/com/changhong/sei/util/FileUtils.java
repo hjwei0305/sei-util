@@ -66,7 +66,7 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
             return StringUtils.EMPTY;
         }
         String ext = StringUtils.substring(fileName, StringUtils.lastIndexOf(fileName, DOT) + 1);
-        return StringUtils.trimToEmpty(ext);
+        return StringUtils.trimToEmpty(ext).toLowerCase();
     }
 
     /**
