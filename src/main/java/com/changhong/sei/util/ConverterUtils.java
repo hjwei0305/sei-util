@@ -804,8 +804,9 @@ public final class ConverterUtils {
         parse = parse.replaceFirst("^[0-9]{2}([^0-9])", "yy$1");
         parse = parse.replaceFirst("([^0-9])[0-9]{1,2}([^0-9])", "$1MM$2");
         parse = parse.replaceFirst("([^0-9])[0-9]{1,2}( ?)", "$1dd$2");
-        parse = parse.replaceFirst("( )[0-9]{1,2}([^0-9])", "$1HH$2");
-        parse = parse.replaceFirst("([^0-9])[0-9]{1,2}([^0-9])", "$1mm$2");
+        parse = parse.replaceFirst("([^0-9])[0-9]{1,2}([^0-9]?)", "$1HH$2");
+        // parse = parse.replaceFirst("( )[0-9]{1,2}([^0-9])", "$1HH$2");
+        parse = parse.replaceFirst("([^0-9])[0-9]{1,2}([^0-9]?)", "$1mm$2");
         parse = parse.replaceFirst("([^0-9])[0-9]{1,2}([^0-9]?)", "$1ss$2");
 
         Date result = null;
