@@ -118,7 +118,7 @@ public class SerializeUtils {
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         for (PropertyDescriptor descriptor : propertyDescriptors) {
             String propertyName = descriptor.getName();
-            if (!propertyName.equals("class")) {
+            if (!"class".equals(propertyName)) {
                 Method readMethod = descriptor.getReadMethod();
                 Object result = readMethod.invoke(bean, new Object[0]);
                 if (result != null) {
@@ -133,7 +133,7 @@ public class SerializeUtils {
                         returnMap.put(propertyName, result);
                     }
                 } else {
-                    returnMap.put(propertyName, "");
+                    returnMap.put(propertyName, result);
                 }
             }
         }
@@ -154,8 +154,10 @@ public class SerializeUtils {
      */
     @SuppressWarnings("rawtypes")
     public static <T> T convertMap(Class<T> type, Map<String, Object> map) throws IntrospectionException, IllegalAccessException, InstantiationException, InvocationTargetException {
-        BeanInfo beanInfo = Introspector.getBeanInfo(type); // 获取类属性
-        T object = type.newInstance(); // 创建 JavaBean 对象
+        // 获取类属性
+        BeanInfo beanInfo = Introspector.getBeanInfo(type);
+        // 创建 JavaBean 对象
+        T object = type.newInstance();
 
         // 给 JavaBean 对象的属性赋值
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
