@@ -15,6 +15,10 @@ repositories {
     mavenLocal()
 
     maven { url 'http://rddgit.changhong.com/nexus/repository/SEI_Group/' }
+    maven {
+        url 'https://repo.maven.apache.org/maven2'
+        name 'Maven Central'
+    }
 }
 
 //自定义属性
@@ -33,10 +37,13 @@ dependencies {
             "com.fasterxml.uuid:java-uuid-generator:$fasterxml_uuid_version"
     )
 
-    // 在使用线程池等会池化复用线程的执行组件情况下，提供ThreadLocal值的传递功能，解决异步执行时上下文传递的问题
-    compile("com.alibaba:transmittable-thread-local:2.11.5")
+    // 反射工具类
+    compile('org.reflections:reflections:0.9.12')
 
-    implementation("org.slf4j:slf4j-api:1.7.25")
+    // 在使用线程池等会池化复用线程的执行组件情况下，提供ThreadLocal值的传递功能，解决异步执行时上下文传递的问题
+    compile('com.alibaba:transmittable-thread-local:2.12.1')
+
+    implementation('org.slf4j:slf4j-api:1.7.32')
 
     // 测试依赖
     testCompile(

@@ -14,7 +14,7 @@ import java.util.*;
  */
 @SuppressWarnings("unchecked")
 public class EnumUtils {
-    private static Map<Class<?>, List<EnumEntity>> enumDatasContainer = new HashMap<Class<?>, List<EnumEntity>>();
+    private static final Map<Class<?>, List<EnumEntity>> enumDatasContainer = new HashMap<Class<?>, List<EnumEntity>>();
 
     /**
      * 基于Enum类返回对应的key-value Map构建对象
@@ -29,7 +29,7 @@ public class EnumUtils {
             if (enumEntities != null) {
                 return enumEntities;
             }
-            enumEntities = new ArrayList<EnumEntity>();
+            enumEntities = new ArrayList<>();
             Field[] fields = enumClass.getFields();
             for (Field field : fields) {
                 String remark;
@@ -53,15 +53,14 @@ public class EnumUtils {
 
     /**
      * 获取枚举值描述的键值对
+     *
      * @param enumClass 枚举类
      * @return 枚举类键值对
      */
-    public static Map<String, String> getEnumMap(Class<? extends Enum> enumClass){
+    public static Map<String, String> getEnumMap(Class<? extends Enum> enumClass) {
         List<EnumEntity> enumEntities = getEnumDataList(enumClass);
         Map<String, String> map = new LinkedHashMap<>();
-        enumEntities.forEach(enumEntity -> {
-            map.put(enumEntity.getName(), enumEntity.getRemark());
-        });
+        enumEntities.forEach(enumEntity -> map.put(enumEntity.getName(), enumEntity.getRemark()));
         return map;
     }
 
@@ -195,6 +194,10 @@ public class EnumUtils {
 
         public Enum getAnEnum() {
             return anEnum;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
         }
     }
 }
