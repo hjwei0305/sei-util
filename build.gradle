@@ -38,12 +38,16 @@ dependencies {
     )
 
     // 反射工具类
-    compile('org.reflections:reflections:0.9.12')
+    compile('org.reflections:reflections:0.10.2')
+
+    // 国密算法工具包
+//    compile('org.bouncycastle:bcprov-jdk15on:1.54')
+    compile('org.bouncycastle:bcprov-jdk16:1.46')
 
     // 在使用线程池等会池化复用线程的执行组件情况下，提供ThreadLocal值的传递功能，解决异步执行时上下文传递的问题
-    compile('com.alibaba:transmittable-thread-local:2.12.1')
+    compile('com.alibaba:transmittable-thread-local:2.12.4')
 
-    implementation('org.slf4j:slf4j-api:1.7.32')
+    implementation('org.slf4j:slf4j-api:1.7.35')
 
     // 测试依赖
     testCompile(
