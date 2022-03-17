@@ -1,9 +1,7 @@
 package com.changhong.sei.util.sm;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-
 import java.io.IOException;
+import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +13,8 @@ import java.util.regex.Pattern;
  * @version 1.0.00  2022-03-17 19:21
  */
 public class SM4Utils {
+
+    private static final Pattern PATTERN = Pattern.compile("\\s*|\t|\r|\n");
     //	private String secretKey = "";
 //    private String iv = "";
 //    private boolean hexString = false;
@@ -77,10 +77,10 @@ public class SM4Utils {
             SM4 sm4 = new SM4();
             sm4.sm4_setkey_enc(ctx, keyBytes);
             byte[] encrypted = sm4.sm4_crypt_ecb(ctx, plainText.getBytes("GBK"));
-            String cipherText = new BASE64Encoder().encode(encrypted);
+            Base64.Encoder encoder = Base64.getEncoder();
+            String cipherText = encoder.encodeToString(encrypted);
             if (cipherText != null && cipherText.trim().length() > 0) {
-                Pattern p = Pattern.compile("\\s*|\t|\r|\n");
-                Matcher m = p.matcher(cipherText);
+                Matcher m = PATTERN.matcher(cipherText);
                 cipherText = m.replaceAll("");
             }
             return cipherText;
@@ -105,7 +105,9 @@ public class SM4Utils {
 
             SM4 sm4 = new SM4();
             sm4.sm4_setkey_dec(ctx, keyBytes);
-            byte[] decrypted = sm4.sm4_crypt_ecb(ctx, new BASE64Decoder().decodeBuffer(cipherText));
+            Base64.Decoder decoder = Base64.getDecoder();
+
+            byte[] decrypted = sm4.sm4_crypt_ecb(ctx, decoder.decode(cipherText));
             return new String(decrypted, "GBK");
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,10 +134,11 @@ public class SM4Utils {
             SM4 sm4 = new SM4();
             sm4.sm4_setkey_enc(ctx, keyBytes);
             byte[] encrypted = sm4.sm4_crypt_cbc(ctx, ivBytes, plainText.getBytes("GBK"));
-            String cipherText = new BASE64Encoder().encode(encrypted);
+            Base64.Encoder encoder = Base64.getEncoder();
+
+            String cipherText = encoder.encodeToString(encrypted);
             if (cipherText != null && cipherText.trim().length() > 0) {
-                Pattern p = Pattern.compile("\\s*|\t|\r|\n");
-                Matcher m = p.matcher(cipherText);
+                Matcher m = PATTERN.matcher(cipherText);
                 cipherText = m.replaceAll("");
             }
             return cipherText;
@@ -163,7 +166,9 @@ public class SM4Utils {
 
             SM4 sm4 = new SM4();
             sm4.sm4_setkey_dec(ctx, keyBytes);
-            byte[] decrypted = sm4.sm4_crypt_cbc(ctx, ivBytes, new BASE64Decoder().decodeBuffer(cipherText));
+            Base64.Decoder decoder = Base64.getDecoder();
+
+            byte[] decrypted = sm4.sm4_crypt_cbc(ctx, ivBytes, decoder.decode(cipherText));
             return new String(decrypted, "GBK");
         } catch (Exception e) {
             e.printStackTrace();
