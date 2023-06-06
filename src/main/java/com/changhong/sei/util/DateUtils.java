@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -181,6 +183,134 @@ public class DateUtils {
     }
 
     /**
+     * 将日期字符串转化为日期对象
+     * @param date
+     * @param format
+     * @return
+     */
+    public static LocalDate parseLocalDate(String date, String format) {
+        if (date == null) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(date, DateTimeFormatter.ofPattern(format));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    /**
+     * 将日期字符串转化为日期对象，格式为yyyy-MM-dd
+     * @param date
+     * @return
+     */
+    public static LocalDate parseLocalDate(String date) {
+        return parseLocalDate(date, DEFAULT_DATE_FORMAT);
+    }
+
+    /**
+     * 将日期字符串转化为日期时间对象
+     * @param date
+     * @param format
+     * @return
+     */
+    public static LocalDateTime parseLocalDateTime(String date, String format) {
+        if (date == null) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(format));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+/**
+     * 将日期字符串转化为日期对象，格式为yyyy-MM-dd HH:mm:ss
+     * @param date
+     * @return
+     */
+    public static LocalDateTime parseLocalDateTime(String date) {
+        return parseLocalDateTime(date, DEFAULT_TIME_FORMAT);
+    }
+
+    /**
+     * 将日期对象转化为日期字符串
+     * @param localDate
+     * @param format
+     * @return
+     */
+    public static String localDateToString(LocalDate localDate, String format) {
+        if (localDate == null) {
+            return null;
+        }
+        try {
+            return localDate.format(DateTimeFormatter.ofPattern(format));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 将日期对象转化为日期字符串，格式为yyyy-MM-dd
+     * @param localDate
+     * @return
+     */
+    public static String localDateToString(LocalDate localDate) {
+        return localDateToString(localDate, DEFAULT_DATE_FORMAT);
+    }
+
+    /**
+     * 将日期时间对象转化为日期字符串
+     * @param localDateTime
+     * @param format
+     * @return
+     */
+    public static String localDateTimeToString(LocalDateTime localDateTime, String format) {
+        if (localDateTime == null) {
+            return null;
+        }
+        try {
+            return localDateTime.format(DateTimeFormatter.ofPattern(format));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 将日期时间对象转化为日期字符串，格式为yyyy-MM-dd HH:mm:ss
+     * @param localDateTime
+     * @return
+     */
+    public static String localDateTimeToString(LocalDateTime localDateTime) {
+        return localDateTimeToString(localDateTime, DEFAULT_TIME_FORMAT);
+    }
+
+
+    /**
+     * 将日期对象Date转化为日期LocalDate对象
+     * @param date
+     * @return
+     */
+    public static LocalDate dateToLocalDate(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    /**
+     * 将日期Date对象转化为日期时间LocalDate对象
+     * @param date
+     * @return
+     */
+    public static LocalDateTime dateToLocalDateTime(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    /**
      * 将日期时间字符串转化为日期对象
      *
      * @param date 日期字符串 {@linkplain DateUtils#DEFAULT_TIME_FORMAT}
@@ -199,6 +329,18 @@ public class DateUtils {
     public static Date parseTime(String date) {
         return parseTime(date, DEFAULT_TIME_FORMAT);
     }
+
+    /**
+     * 计算两个日期之间的天数
+     *
+     * @param startDate 开始日期
+     * @param endDate   结束日期
+     * @return 返回两个日期之间的天数
+     */
+    public static long getDaysBetween(LocalDate startDate, LocalDate endDate) {
+        return ChronoUnit.DAYS.between(startDate, endDate);
+    }
+
 
     /**
      * 对差异时间的格式化显示，方便人工查看
